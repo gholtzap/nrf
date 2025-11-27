@@ -2,9 +2,11 @@ import express, { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import nfInstancesRouter from './routes/nfInstances';
 import sharedDataRouter from './routes/sharedData';
+import subscriptionsRouter from './routes/subscriptions';
 import { mongoClient } from './db/mongodb';
 import { nfStore } from './storage/nfStore';
 import { sharedDataStore } from './storage/sharedDataStore';
+import { subscriptionStore } from './storage/subscriptionStore';
 
 dotenv.config();
 
@@ -20,6 +22,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 app.use('/nnrf-nfm/v1/nf-instances', nfInstancesRouter);
 app.use('/nnrf-nfm/v1/shared-data', sharedDataRouter);
+app.use('/nnrf-nfm/v1/subscriptions', subscriptionsRouter);
 
 app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'UP' });
@@ -48,6 +51,7 @@ async function startServer() {
 
   nfStore.initialize();
   sharedDataStore.initialize();
+  subscriptionStore.initialize();
 
   const sampleProfile = {
     nfInstanceId: '550e8400-e29b-41d4-a716-446655440000',
