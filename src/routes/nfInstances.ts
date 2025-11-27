@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express';
+const jsonpatch = require('fast-json-patch');
 import { nfStore } from '../storage/nfStore';
 import { UriList } from '../types/uriList';
+import { PatchItem } from '../types/patchItem';
 
 const router = Router();
 
@@ -104,6 +106,75 @@ router.put('/:nfInstanceID', (req: Request, res: Response) => {
     const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
     res.set('Location', `${baseUrl}/${nfInstanceID}`);
     res.status(201).json(profile);
+  }
+});
+
+router.patch('/:nfInstanceID', (req: Request, res: Response) => {
+  const { nfInstanceID } = req.params;
+  const patchOperations: PatchItem[] = req.body;
+
+  if (!Array.isArray(patchOperations) || patchOperations.length === 0) {
+    return res.status(400).json({
+      type: 'application/problem+json',
+      title: 'Bad Request',
+      status: 400,
+      detail: 'Request body must contain an array of patch operations',
+      instance: req.originalUrl
+    });
+  }
+
+  const profile = nfStore.get(nfInstanceID);
+
+  if (!profile) {
+    return res.status(404).json({
+      type: 'application/problem+json',
+      title: 'Not Found',
+      status: 404,
+      detail: `NF Instance with ID ${nfInstanceID} not found`,
+      instance: req.originalUrl
+    });
+  }
+
+  const ifMatch = req.get('If-Match');
+  if (ifMatch) {
+    const currentEtag = `"${nfInstanceID}-${profile.nfInstanceId}"`;
+    if (ifMatch !== currentEtag && ifMatch !== '*') {
+      return res.status(412).json({
+        type: 'application/problem+json',
+        title: 'Precondition Failed',
+        status: 412,
+        detail: 'If-Match header does not match current resource ETag',
+        instance: req.originalUrl
+      });
+    }
+  }
+
+  try {
+    const patchResult = jsonpatch.applyPatch(profile, patchOperations);
+
+    if (patchResult.newDocument) {
+      nfStore.set(nfInstanceID, patchResult.newDocument);
+
+      const etag = `"${nfInstanceID}-${Date.now()}"`;
+      res.set('ETag', etag);
+      res.status(200).json(patchResult.newDocument);
+    } else {
+      return res.status(400).json({
+        type: 'application/problem+json',
+        title: 'Bad Request',
+        status: 400,
+        detail: 'Failed to apply patch operations',
+        instance: req.originalUrl
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      type: 'application/problem+json',
+      title: 'Bad Request',
+      status: 400,
+      detail: error instanceof Error ? error.message : 'Invalid patch operations',
+      instance: req.originalUrl
+    });
   }
 });
 
