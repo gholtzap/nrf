@@ -17,11 +17,11 @@ This project implements the NRF component based on 3GPP specifications.
 - NFManagement Service - NF Deregistration (DELETE /nnrf-nfm/v1/nf-instances/{nfInstanceID})
 - NFManagement Service - OPTIONS (OPTIONS /nnrf-nfm/v1/nf-instances)
 - NFManagement Service - Get Shared Data (GET /nnrf-nfm/v1/shared-data/{sharedDataId})
+- NFManagement Service - Register Shared Data (PUT /nnrf-nfm/v1/shared-data/{sharedDataId})
 
 ### NOT IMPLEMENTED FEATURES
 
 #### Core NRF Services (3GPP TS 29.510)
-- NFManagement Service - Register Shared Data (PUT /nnrf-nfm/v1/shared-data/{sharedDataId})
 - NFManagement Service - Update Shared Data (PATCH /nnrf-nfm/v1/shared-data/{sharedDataId})
 - NFManagement Service - Delete Shared Data (DELETE /nnrf-nfm/v1/shared-data/{sharedDataId})
 - Subscription Service - Create Subscription (POST /nnrf-nfm/v1/subscriptions)
