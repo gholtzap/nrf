@@ -178,4 +178,24 @@ router.patch('/:nfInstanceID', (req: Request, res: Response) => {
   }
 });
 
+router.delete('/:nfInstanceID', (req: Request, res: Response) => {
+  const { nfInstanceID } = req.params;
+
+  const profile = nfStore.get(nfInstanceID);
+
+  if (!profile) {
+    return res.status(404).json({
+      type: 'application/problem+json',
+      title: 'Not Found',
+      status: 404,
+      detail: `NF Instance with ID ${nfInstanceID} not found`,
+      instance: req.originalUrl
+    });
+  }
+
+  nfStore.delete(nfInstanceID);
+
+  res.status(204).send();
+});
+
 export default router;
