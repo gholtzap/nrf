@@ -113,4 +113,24 @@ router.patch('/:sharedDataId', async (req: Request, res: Response) => {
   res.status(200).json(patchedData);
 });
 
+router.delete('/:sharedDataId', async (req: Request, res: Response) => {
+  const { sharedDataId } = req.params;
+
+  const exists = await sharedDataStore.has(sharedDataId);
+
+  if (!exists) {
+    return res.status(404).json({
+      type: 'application/problem+json',
+      title: 'Not Found',
+      status: 404,
+      detail: `Shared Data with ID ${sharedDataId} not found`,
+      instance: req.originalUrl
+    });
+  }
+
+  await sharedDataStore.delete(sharedDataId);
+
+  res.status(204).send();
+});
+
 export default router;
