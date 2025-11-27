@@ -1,7 +1,50 @@
 import { Router, Request, Response } from 'express';
 import { nfStore } from '../storage/nfStore';
+import { UriList } from '../types/uriList';
 
 const router = Router();
+
+router.get('/', (req: Request, res: Response) => {
+  const { 'nf-type': nfType, limit, 'page-number': pageNumber, 'page-size': pageSize } = req.query;
+
+  let profiles = nfStore.getAll();
+
+  if (nfType && typeof nfType === 'string') {
+    profiles = profiles.filter(profile => profile.nfType === nfType);
+  }
+
+  const totalItemCount = profiles.length;
+
+  let paginatedProfiles = profiles;
+  if (pageNumber && pageSize) {
+    const page = parseInt(pageNumber as string, 10);
+    const size = parseInt(pageSize as string, 10);
+    const startIndex = (page - 1) * size;
+    const endIndex = startIndex + size;
+    paginatedProfiles = profiles.slice(startIndex, endIndex);
+  } else if (limit) {
+    const maxItems = parseInt(limit as string, 10);
+    paginatedProfiles = profiles.slice(0, maxItems);
+  }
+
+  const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
+
+  const uriList: UriList = {
+    _links: {
+      self: {
+        href: `${baseUrl}${req.url}`
+      },
+      item: paginatedProfiles.map(profile => ({
+        href: `${baseUrl}/${profile.nfInstanceId}`
+      }))
+    },
+    totalItemCount
+  };
+
+  res.set('Content-Type', 'application/3gppHal+json');
+  res.set('ETag', `"collection-${Date.now()}"`);
+  res.status(200).json(uriList);
+});
 
 router.get('/:nfInstanceID', (req: Request, res: Response) => {
   const { nfInstanceID } = req.params;
