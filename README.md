@@ -24,12 +24,12 @@ This project implements the NRF component based on 3GPP specifications.
 - Subscription Service - Update Subscription (PATCH /nnrf-nfm/v1/subscriptions/{subscriptionID})
 - Subscription Service - Delete Subscription (DELETE /nnrf-nfm/v1/subscriptions/{subscriptionID})
 - Subscription Service - Get Subscription (GET /nnrf-nfm/v1/subscriptions/{subscriptionID})
+- NFDiscovery Service - Search NF Instances (GET /nnrf-disc/v1/nf-instances)
+- NFDiscovery Service - Get NF Instance by ID (GET /nnrf-disc/v1/nf-instances/{nfInstanceID})
 
 ### NOT IMPLEMENTED FEATURES
 
 #### Core NRF Services (3GPP TS 29.510)
-- NFDiscovery Service - Search NF Instances (GET /nnrf-disc/v1/nf-instances)
-- NFDiscovery Service - Get NF Instance by ID (GET /nnrf-disc/v1/nf-instances/{nfInstanceID})
 - AccessToken Service - Request Access Token (POST /oauth2/token)
 - Bootstrapping Service - Get Bootstrapping Info (GET /bootstrapping)
 

@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import nfInstancesRouter from './routes/nfInstances';
 import sharedDataRouter from './routes/sharedData';
 import subscriptionsRouter from './routes/subscriptions';
+import nfDiscoveryRouter from './routes/nfDiscovery';
 import { mongoClient } from './db/mongodb';
 import { nfStore } from './storage/nfStore';
 import { sharedDataStore } from './storage/sharedDataStore';
@@ -23,6 +24,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use('/nnrf-nfm/v1/nf-instances', nfInstancesRouter);
 app.use('/nnrf-nfm/v1/shared-data', sharedDataRouter);
 app.use('/nnrf-nfm/v1/subscriptions', subscriptionsRouter);
+app.use('/nnrf-disc/v1/nf-instances', nfDiscoveryRouter);
 
 app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'UP' });
