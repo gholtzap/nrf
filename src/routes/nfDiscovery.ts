@@ -1,6 +1,5 @@
 import { Router, Request, Response } from 'express';
 import { nfStore } from '../storage/nfStore';
-import { NFProfile } from '../types/nfProfile';
 
 const router = Router();
 
@@ -9,7 +8,11 @@ router.get('/', async (req: Request, res: Response) => {
     'target-nf-type': targetNfType,
     'requester-nf-type': requesterNfType,
     'service-names': serviceNames,
-    'limit': limit
+    'limit': limit,
+    'plmn-id': plmnId,
+    'snssai': snssai,
+    'preferred-locality': preferredLocality,
+    'min-capacity': minCapacity
   } = req.query;
 
   let profiles = await nfStore.getAll();
@@ -38,6 +41,81 @@ router.get('/', async (req: Request, res: Response) => {
         return true;
       }
       return profile.allowedNfTypes.includes(requesterNfType);
+    });
+  }
+
+  if (plmnId && typeof plmnId === 'string') {
+    const [mcc, mnc] = plmnId.split('-');
+    if (mcc && mnc) {
+      profiles = profiles.filter(profile => {
+        if (!profile.plmnList || profile.plmnList.length === 0) {
+          return false;
+        }
+        return profile.plmnList.some(plmn => plmn.mcc === mcc && plmn.mnc === mnc);
+      });
+    }
+  }
+
+  if (snssai && typeof snssai === 'string') {
+    const snssaiParts = snssai.split('-');
+    const sst = parseInt(snssaiParts[0], 10);
+    const sd = snssaiParts[1];
+    if (!isNaN(sst)) {
+      profiles = profiles.filter(profile => {
+        if (!profile.sNssais || profile.sNssais.length === 0) {
+          return false;
+        }
+        return profile.sNssais.some(nssai => {
+          if (nssai.sst !== sst) {
+            return false;
+          }
+          if (sd && nssai.sd !== sd) {
+            return false;
+          }
+          return true;
+        });
+      });
+    }
+  }
+
+  if (minCapacity && typeof minCapacity === 'string') {
+    const minCap = parseInt(minCapacity, 10);
+    if (!isNaN(minCap)) {
+      profiles = profiles.filter(profile => {
+        return profile.capacity !== undefined && profile.capacity >= minCap;
+      });
+    }
+  }
+
+  if (preferredLocality && typeof preferredLocality === 'string') {
+    profiles.sort((a, b) => {
+      const aLocalityMatch = a.locality === preferredLocality;
+      const bLocalityMatch = b.locality === preferredLocality;
+
+      if (aLocalityMatch && !bLocalityMatch) return -1;
+      if (!aLocalityMatch && bLocalityMatch) return 1;
+
+      const aPriority = a.priority ?? 0;
+      const bPriority = b.priority ?? 0;
+      if (aPriority !== bPriority) {
+        return bPriority - aPriority;
+      }
+
+      const aCapacity = a.capacity ?? 0;
+      const bCapacity = b.capacity ?? 0;
+      return bCapacity - aCapacity;
+    });
+  } else {
+    profiles.sort((a, b) => {
+      const aPriority = a.priority ?? 0;
+      const bPriority = b.priority ?? 0;
+      if (aPriority !== bPriority) {
+        return bPriority - aPriority;
+      }
+
+      const aCapacity = a.capacity ?? 0;
+      const bCapacity = b.capacity ?? 0;
+      return bCapacity - aCapacity;
     });
   }
 

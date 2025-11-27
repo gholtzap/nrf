@@ -34,6 +34,10 @@ This project implements the NRF component based on 3GPP specifications.
 - Automatic deregistration on heartbeat timeout
 - Configurable heartbeat intervals
 - Grace period handling
+- PLMN ID filtering
+- S-NSSAI filtering
+- Capacity and priority-based selection
+- Locality-based selection
 
 ### NOT IMPLEMENTED FEATURES
 
@@ -53,14 +57,10 @@ This project implements the NRF component based on 3GPP specifications.
 - Complex query parameter parsing and filtering
 - NF type filtering
 - Service name filtering
-- PLMN ID filtering
-- S-NSSAI filtering
 - DNN filtering
 - TAI filtering
 - AMF Set/Region filtering
 - GUAMI filtering
-- Locality-based selection (TAC-based proximity)
-- Capacity and priority-based selection
 - NF set/service set support
 
 #### HTTP/2 & REST Infrastructure
