@@ -5,6 +5,7 @@ import { UriList } from '../types/uriList';
 import { PatchItem } from '../types/patchItem';
 import { OptionsResponse } from '../types/optionsResponse';
 import { validateToken } from '../middleware/auth';
+import { heartbeatService } from '../services/heartbeatService';
 
 const router = Router();
 
@@ -114,6 +115,8 @@ router.put('/:nfInstanceID', validateToken, async (req: Request, res: Response) 
 
   await nfStore.set(nfInstanceID, profile);
 
+  await heartbeatService.recordHeartbeat(nfInstanceID, profile.heartBeatTimer);
+
   const etag = `"${nfInstanceID}-${Date.now()}"`;
   res.set('ETag', etag);
 
@@ -172,6 +175,8 @@ router.patch('/:nfInstanceID', validateToken, async (req: Request, res: Response
     if (patchResult.newDocument) {
       await nfStore.set(nfInstanceID, patchResult.newDocument);
 
+      await heartbeatService.recordHeartbeat(nfInstanceID, patchResult.newDocument.heartBeatTimer);
+
       const etag = `"${nfInstanceID}-${Date.now()}"`;
       res.set('ETag', etag);
       res.status(200).json(patchResult.newDocument);
@@ -211,6 +216,8 @@ router.delete('/:nfInstanceID', validateToken, async (req: Request, res: Respons
   }
 
   await nfStore.delete(nfInstanceID);
+
+  await heartbeatService.deleteHeartbeat(nfInstanceID);
 
   res.status(204).send();
 });

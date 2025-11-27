@@ -29,6 +29,11 @@ This project implements the NRF component based on 3GPP specifications.
 - Bootstrapping Service - Get Bootstrapping Info (GET /bootstrapping)
 - AccessToken Service - Request Access Token (POST /oauth2/token)
 - OAuth2 token generation and validation
+- Heartbeat reception and processing
+- NF health status monitoring
+- Automatic deregistration on heartbeat timeout
+- Configurable heartbeat intervals
+- Grace period handling
 
 ### NOT IMPLEMENTED FEATURES
 
@@ -81,13 +86,6 @@ This project implements the NRF component based on 3GPP specifications.
 - NF profile change notifications
 - Retry mechanism for failed notifications
 - Notification correlation ID tracking
-
-#### Heartbeat & Health Management
-- Heartbeat reception and processing
-- NF health status monitoring
-- Automatic deregistration on heartbeat timeout
-- Configurable heartbeat intervals
-- Grace period handling
 
 #### Configuration Management
 - YAML/JSON configuration file support

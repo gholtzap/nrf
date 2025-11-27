@@ -11,6 +11,7 @@ import { nfStore } from './storage/nfStore';
 import { sharedDataStore } from './storage/sharedDataStore';
 import { subscriptionStore } from './storage/subscriptionStore';
 import { tokenStore } from './storage/tokenStore';
+import { heartbeatService } from './services/heartbeatService';
 
 dotenv.config();
 
@@ -60,6 +61,7 @@ async function startServer() {
   sharedDataStore.initialize();
   subscriptionStore.initialize();
   tokenStore.initialize();
+  heartbeatService.initialize();
 
   const sampleProfile = {
     nfInstanceId: '550e8400-e29b-41d4-a716-446655440000',
