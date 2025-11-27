@@ -1,5 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { sharedDataStore } from '../storage/sharedDataStore';
+import * as jsonpatch from 'fast-json-patch';
+import { PatchItem } from '../types/patchItem';
 
 const router = Router();
 
@@ -62,6 +64,53 @@ router.put('/:sharedDataId', async (req: Request, res: Response) => {
     res.set('Location', `${baseUrl}/${sharedDataId}`);
     res.status(201).json(sharedData);
   }
+});
+
+router.patch('/:sharedDataId', async (req: Request, res: Response) => {
+  const { sharedDataId } = req.params;
+  const patches: PatchItem[] = req.body;
+
+  if (!Array.isArray(patches) || patches.length === 0) {
+    return res.status(400).json({
+      type: 'application/problem+json',
+      title: 'Bad Request',
+      status: 400,
+      detail: 'Request body must contain a non-empty array of patch operations',
+      instance: req.originalUrl
+    });
+  }
+
+  const existingData = await sharedDataStore.get(sharedDataId);
+
+  if (!existingData) {
+    return res.status(404).json({
+      type: 'application/problem+json',
+      title: 'Not Found',
+      status: 404,
+      detail: `Shared Data with ID ${sharedDataId} not found`,
+      instance: req.originalUrl
+    });
+  }
+
+  const errors = jsonpatch.validate(patches, existingData);
+  if (errors) {
+    return res.status(400).json({
+      type: 'application/problem+json',
+      title: 'Bad Request',
+      status: 400,
+      detail: 'Invalid patch operations',
+      instance: req.originalUrl
+    });
+  }
+
+  const patchedData = { ...existingData };
+  jsonpatch.apply(patchedData, patches);
+
+  await sharedDataStore.set(sharedDataId, patchedData);
+
+  const etag = `"${sharedDataId}-${Date.now()}"`;
+  res.set('ETag', etag);
+  res.status(200).json(patchedData);
 });
 
 export default router;
