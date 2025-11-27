@@ -65,4 +65,46 @@ router.get('/:nfInstanceID', (req: Request, res: Response) => {
   res.status(200).json(profile);
 });
 
+router.put('/:nfInstanceID', (req: Request, res: Response) => {
+  const { nfInstanceID } = req.params;
+  const profile = req.body;
+
+  if (!profile || typeof profile !== 'object') {
+    return res.status(400).json({
+      type: 'application/problem+json',
+      title: 'Bad Request',
+      status: 400,
+      detail: 'Request body must contain a valid NFProfile',
+      instance: req.originalUrl
+    });
+  }
+
+  if (profile.nfInstanceId && profile.nfInstanceId !== nfInstanceID) {
+    return res.status(400).json({
+      type: 'application/problem+json',
+      title: 'Bad Request',
+      status: 400,
+      detail: 'nfInstanceId in body does not match path parameter',
+      instance: req.originalUrl
+    });
+  }
+
+  profile.nfInstanceId = nfInstanceID;
+
+  const isUpdate = nfStore.has(nfInstanceID);
+
+  nfStore.set(nfInstanceID, profile);
+
+  const etag = `"${nfInstanceID}-${Date.now()}"`;
+  res.set('ETag', etag);
+
+  if (isUpdate) {
+    res.status(200).json(profile);
+  } else {
+    const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
+    res.set('Location', `${baseUrl}/${nfInstanceID}`);
+    res.status(201).json(profile);
+  }
+});
+
 export default router;
