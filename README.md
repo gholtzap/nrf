@@ -23,11 +23,9 @@ This project implements the NRF component based on 3GPP specifications.
 - Subscription Service - Create Subscription (POST /nnrf-nfm/v1/subscriptions)
 - Subscription Service - Update Subscription (PATCH /nnrf-nfm/v1/subscriptions/{subscriptionID})
 - Subscription Service - Delete Subscription (DELETE /nnrf-nfm/v1/subscriptions/{subscriptionID})
+- Subscription Service - Get Subscription (GET /nnrf-nfm/v1/subscriptions/{subscriptionID})
 
 ### NOT IMPLEMENTED FEATURES
-
-#### Missing NFManagement Endpoints
-- Subscription Service - Get Subscription (GET /nnrf-nfm/v1/subscriptions/{subscriptionID})
 
 #### Core NRF Services (3GPP TS 29.510)
 - NFDiscovery Service - Search NF Instances (GET /nnrf-disc/v1/nf-instances)
@@ -75,7 +73,6 @@ This project implements the NRF component based on 3GPP specifications.
 - NF authentication via OAuth2
 - TLS/mTLS support
 - Certificate management
-- API key support (optional)
 - Signature verification
 
 #### Notification System
@@ -102,30 +99,6 @@ This project implements the NRF component based on 3GPP specifications.
 - Heartbeat timer configuration
 - Log level configuration
 
-#### Logging & Monitoring
-- Structured logging system (Winston/Pino)
-- Request/response logging
-- Audit logging for registration events
-- Performance metrics collection
-- Prometheus metrics endpoint
-- Health check endpoint (/health)
-- Readiness probe endpoint
-
-#### Testing Infrastructure
-- Unit test framework setup (Jest/Mocha)
-- Integration tests for API endpoints
-- Mock NF clients for testing
-- Test coverage reporting
-- Load testing scripts
-
-#### DevOps & Deployment
-- Dockerfile for containerization
-- Docker Compose setup
-- Kubernetes deployment manifests
-- Helm chart
-- CI/CD pipeline configuration
-- API documentation (OpenAPI/Swagger)
-
 #### 3GPP Compliance Features
 - Support for all NF types defined in TS 23.501
 - API versioning support (v1, v2, etc.)
@@ -133,13 +106,3 @@ This project implements the NRF component based on 3GPP specifications.
 - Compliance with TS 29.510 specifications
 - Compliance with TS 29.500 (general 5G SBI)
 - Support for indirect communication (via SCP)
-
-#### Advanced Features
-- NF profile caching strategy
-- Geographic redundancy support
-- NRF clustering/high availability
-- Load balancing between NRF instances
-- Analytics and reporting
-- Admin API for management operations
-- Bulk operations support
-- Import/export of NF profiles

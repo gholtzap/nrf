@@ -7,6 +7,26 @@ import { PatchItem } from '../types/patchItem';
 
 const router = Router();
 
+router.get('/:subscriptionID', async (req: Request, res: Response) => {
+  const { subscriptionID } = req.params;
+
+  const existingSubscription = await subscriptionStore.get(subscriptionID);
+
+  if (!existingSubscription) {
+    return res.status(404).json({
+      type: 'application/problem+json',
+      title: 'Not Found',
+      status: 404,
+      detail: `Subscription with ID ${subscriptionID} not found`,
+      instance: req.originalUrl
+    });
+  }
+
+  res.set('Accept-Encoding', 'gzip, deflate');
+  res.set('Content-Encoding', 'gzip');
+  res.status(200).json(existingSubscription);
+});
+
 router.post('/', async (req: Request, res: Response) => {
   const subscriptionData: SubscriptionData = req.body;
 
