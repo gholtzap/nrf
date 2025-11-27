@@ -2,6 +2,8 @@ import { Router, Request, Response } from 'express';
 import { subscriptionStore } from '../storage/subscriptionStore';
 import { SubscriptionData } from '../types/subscriptionData';
 import { randomUUID } from 'crypto';
+import * as jsonpatch from 'fast-json-patch';
+import { PatchItem } from '../types/patchItem';
 
 const router = Router();
 
@@ -39,6 +41,53 @@ router.post('/', async (req: Request, res: Response) => {
   res.set('Content-Encoding', 'gzip');
 
   res.status(201).json(subscriptionData);
+});
+
+router.patch('/:subscriptionID', async (req: Request, res: Response) => {
+  const { subscriptionID } = req.params;
+  const patches: PatchItem[] = req.body;
+
+  if (!Array.isArray(patches) || patches.length === 0) {
+    return res.status(400).json({
+      type: 'application/problem+json',
+      title: 'Bad Request',
+      status: 400,
+      detail: 'Request body must contain a non-empty array of patch operations',
+      instance: req.originalUrl
+    });
+  }
+
+  const existingSubscription = await subscriptionStore.get(subscriptionID);
+
+  if (!existingSubscription) {
+    return res.status(404).json({
+      type: 'application/problem+json',
+      title: 'Not Found',
+      status: 404,
+      detail: `Subscription with ID ${subscriptionID} not found`,
+      instance: req.originalUrl
+    });
+  }
+
+  const errors = jsonpatch.validate(patches, existingSubscription);
+  if (errors) {
+    return res.status(400).json({
+      type: 'application/problem+json',
+      title: 'Bad Request',
+      status: 400,
+      detail: 'Invalid patch operations',
+      instance: req.originalUrl
+    });
+  }
+
+  const patchedSubscription = { ...existingSubscription };
+  jsonpatch.apply(patchedSubscription, patches);
+
+  await subscriptionStore.set(subscriptionID, patchedSubscription);
+
+  res.set('Accept-Encoding', 'gzip, deflate');
+  res.set('Content-Encoding', 'gzip');
+  res.status(200).json(patchedSubscription);
 });
 
 export default router;
