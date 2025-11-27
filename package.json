@@ -22,8 +22,10 @@
   },
   "homepage": "https://github.com/gholtzap/nrf#readme",
   "dependencies": {
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "fast-json-patch": "^3.1.1"
+    "fast-json-patch": "^3.1.1",
+    "mongodb": "^7.0.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.5",

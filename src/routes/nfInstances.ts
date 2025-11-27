@@ -22,10 +22,10 @@ router.options('/', (_req: Request, res: Response) => {
   }
 });
 
-router.get('/', (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
   const { 'nf-type': nfType, limit, 'page-number': pageNumber, 'page-size': pageSize } = req.query;
 
-  let profiles = nfStore.getAll();
+  let profiles = await nfStore.getAll();
 
   if (nfType && typeof nfType === 'string') {
     profiles = profiles.filter(profile => profile.nfType === nfType);
@@ -64,10 +64,10 @@ router.get('/', (req: Request, res: Response) => {
   res.status(200).json(uriList);
 });
 
-router.get('/:nfInstanceID', (req: Request, res: Response) => {
+router.get('/:nfInstanceID', async (req: Request, res: Response) => {
   const { nfInstanceID } = req.params;
 
-  const profile = nfStore.get(nfInstanceID);
+  const profile = await nfStore.get(nfInstanceID);
 
   if (!profile) {
     return res.status(404).json({
@@ -83,7 +83,7 @@ router.get('/:nfInstanceID', (req: Request, res: Response) => {
   res.status(200).json(profile);
 });
 
-router.put('/:nfInstanceID', (req: Request, res: Response) => {
+router.put('/:nfInstanceID', async (req: Request, res: Response) => {
   const { nfInstanceID } = req.params;
   const profile = req.body;
 
@@ -109,9 +109,9 @@ router.put('/:nfInstanceID', (req: Request, res: Response) => {
 
   profile.nfInstanceId = nfInstanceID;
 
-  const isUpdate = nfStore.has(nfInstanceID);
+  const isUpdate = await nfStore.has(nfInstanceID);
 
-  nfStore.set(nfInstanceID, profile);
+  await nfStore.set(nfInstanceID, profile);
 
   const etag = `"${nfInstanceID}-${Date.now()}"`;
   res.set('ETag', etag);
@@ -125,7 +125,7 @@ router.put('/:nfInstanceID', (req: Request, res: Response) => {
   }
 });
 
-router.patch('/:nfInstanceID', (req: Request, res: Response) => {
+router.patch('/:nfInstanceID', async (req: Request, res: Response) => {
   const { nfInstanceID } = req.params;
   const patchOperations: PatchItem[] = req.body;
 
@@ -139,7 +139,7 @@ router.patch('/:nfInstanceID', (req: Request, res: Response) => {
     });
   }
 
-  const profile = nfStore.get(nfInstanceID);
+  const profile = await nfStore.get(nfInstanceID);
 
   if (!profile) {
     return res.status(404).json({
@@ -169,7 +169,7 @@ router.patch('/:nfInstanceID', (req: Request, res: Response) => {
     const patchResult = jsonpatch.applyPatch(profile, patchOperations);
 
     if (patchResult.newDocument) {
-      nfStore.set(nfInstanceID, patchResult.newDocument);
+      await nfStore.set(nfInstanceID, patchResult.newDocument);
 
       const etag = `"${nfInstanceID}-${Date.now()}"`;
       res.set('ETag', etag);
@@ -194,10 +194,10 @@ router.patch('/:nfInstanceID', (req: Request, res: Response) => {
   }
 });
 
-router.delete('/:nfInstanceID', (req: Request, res: Response) => {
+router.delete('/:nfInstanceID', async (req: Request, res: Response) => {
   const { nfInstanceID } = req.params;
 
-  const profile = nfStore.get(nfInstanceID);
+  const profile = await nfStore.get(nfInstanceID);
 
   if (!profile) {
     return res.status(404).json({
@@ -209,7 +209,7 @@ router.delete('/:nfInstanceID', (req: Request, res: Response) => {
     });
   }
 
-  nfStore.delete(nfInstanceID);
+  await nfStore.delete(nfInstanceID);
 
   res.status(204).send();
 });

@@ -3,10 +3,10 @@ import { sharedDataStore } from '../storage/sharedDataStore';
 
 const router = Router();
 
-router.get('/:sharedDataId', (req: Request, res: Response) => {
+router.get('/:sharedDataId', async (req: Request, res: Response) => {
   const { sharedDataId } = req.params;
 
-  const sharedData = sharedDataStore.get(sharedDataId);
+  const sharedData = await sharedDataStore.get(sharedDataId);
 
   if (!sharedData) {
     return res.status(404).json({
@@ -22,7 +22,7 @@ router.get('/:sharedDataId', (req: Request, res: Response) => {
   res.status(200).json(sharedData);
 });
 
-router.put('/:sharedDataId', (req: Request, res: Response) => {
+router.put('/:sharedDataId', async (req: Request, res: Response) => {
   const { sharedDataId } = req.params;
   const sharedData = req.body;
 
@@ -48,9 +48,9 @@ router.put('/:sharedDataId', (req: Request, res: Response) => {
 
   sharedData.sharedDataId = sharedDataId;
 
-  const isUpdate = sharedDataStore.has(sharedDataId);
+  const isUpdate = await sharedDataStore.has(sharedDataId);
 
-  sharedDataStore.set(sharedDataId, sharedData);
+  await sharedDataStore.set(sharedDataId, sharedData);
 
   const etag = `"${sharedDataId}-${Date.now()}"`;
   res.set('ETag', etag);

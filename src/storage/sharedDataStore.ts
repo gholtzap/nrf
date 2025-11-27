@@ -1,26 +1,53 @@
+import { Collection } from 'mongodb';
 import { SharedData } from '../types/sharedData';
+import { mongoClient } from '../db/mongodb';
 
 class SharedDataStore {
-  private data: Map<string, SharedData> = new Map();
+  private collection: Collection<SharedData> | null = null;
 
-  get(sharedDataId: string): SharedData | undefined {
-    return this.data.get(sharedDataId);
+  initialize(): void {
+    this.collection = mongoClient.getCollection<SharedData>('shared-data');
   }
 
-  set(sharedDataId: string, sharedData: SharedData): void {
-    this.data.set(sharedDataId, sharedData);
+  async get(sharedDataId: string): Promise<SharedData | null> {
+    if (!this.collection) {
+      throw new Error('SharedDataStore not initialized');
+    }
+    return await this.collection.findOne({ sharedDataId });
   }
 
-  delete(sharedDataId: string): boolean {
-    return this.data.delete(sharedDataId);
+  async set(sharedDataId: string, sharedData: SharedData): Promise<void> {
+    if (!this.collection) {
+      throw new Error('SharedDataStore not initialized');
+    }
+    await this.collection.updateOne(
+      { sharedDataId },
+      { $set: sharedData },
+      { upsert: true }
+    );
   }
 
-  getAll(): SharedData[] {
-    return Array.from(this.data.values());
+  async delete(sharedDataId: string): Promise<boolean> {
+    if (!this.collection) {
+      throw new Error('SharedDataStore not initialized');
+    }
+    const result = await this.collection.deleteOne({ sharedDataId });
+    return result.deletedCount > 0;
   }
 
-  has(sharedDataId: string): boolean {
-    return this.data.has(sharedDataId);
+  async getAll(): Promise<SharedData[]> {
+    if (!this.collection) {
+      throw new Error('SharedDataStore not initialized');
+    }
+    return await this.collection.find({}).toArray();
+  }
+
+  async has(sharedDataId: string): Promise<boolean> {
+    if (!this.collection) {
+      throw new Error('SharedDataStore not initialized');
+    }
+    const count = await this.collection.countDocuments({ sharedDataId });
+    return count > 0;
   }
 }
 
