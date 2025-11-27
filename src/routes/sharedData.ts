@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { sharedDataStore } from '../storage/sharedDataStore';
 import * as jsonpatch from 'fast-json-patch';
 import { PatchItem } from '../types/patchItem';
+import { validateToken } from '../middleware/auth';
 
 const router = Router();
 
@@ -24,7 +25,7 @@ router.get('/:sharedDataId', async (req: Request, res: Response) => {
   res.status(200).json(sharedData);
 });
 
-router.put('/:sharedDataId', async (req: Request, res: Response) => {
+router.put('/:sharedDataId', validateToken, async (req: Request, res: Response) => {
   const { sharedDataId } = req.params;
   const sharedData = req.body;
 
@@ -66,7 +67,7 @@ router.put('/:sharedDataId', async (req: Request, res: Response) => {
   }
 });
 
-router.patch('/:sharedDataId', async (req: Request, res: Response) => {
+router.patch('/:sharedDataId', validateToken, async (req: Request, res: Response) => {
   const { sharedDataId } = req.params;
   const patches: PatchItem[] = req.body;
 
@@ -113,7 +114,7 @@ router.patch('/:sharedDataId', async (req: Request, res: Response) => {
   res.status(200).json(patchedData);
 });
 
-router.delete('/:sharedDataId', async (req: Request, res: Response) => {
+router.delete('/:sharedDataId', validateToken, async (req: Request, res: Response) => {
   const { sharedDataId } = req.params;
 
   const exists = await sharedDataStore.has(sharedDataId);

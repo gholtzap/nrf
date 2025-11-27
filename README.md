@@ -28,6 +28,7 @@ This project implements the NRF component based on 3GPP specifications.
 - NFDiscovery Service - Get NF Instance by ID (GET /nnrf-disc/v1/nf-instances/{nfInstanceID})
 - Bootstrapping Service - Get Bootstrapping Info (GET /bootstrapping)
 - AccessToken Service - Request Access Token (POST /oauth2/token)
+- OAuth2 token generation and validation
 
 ### NOT IMPLEMENTED FEATURES
 
@@ -68,8 +69,6 @@ This project implements the NRF component based on 3GPP specifications.
 - Request logging
 
 #### Authentication & Security
-- OAuth2 access token service
-- Token generation and validation
 - NF authentication via OAuth2
 - TLS/mTLS support
 - Certificate management

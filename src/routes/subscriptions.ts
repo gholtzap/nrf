@@ -4,6 +4,7 @@ import { SubscriptionData } from '../types/subscriptionData';
 import { randomUUID } from 'crypto';
 import * as jsonpatch from 'fast-json-patch';
 import { PatchItem } from '../types/patchItem';
+import { validateToken } from '../middleware/auth';
 
 const router = Router();
 
@@ -27,7 +28,7 @@ router.get('/:subscriptionID', async (req: Request, res: Response) => {
   res.status(200).json(existingSubscription);
 });
 
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', validateToken, async (req: Request, res: Response) => {
   const subscriptionData: SubscriptionData = req.body;
 
   if (!subscriptionData || typeof subscriptionData !== 'object') {
@@ -63,7 +64,7 @@ router.post('/', async (req: Request, res: Response) => {
   res.status(201).json(subscriptionData);
 });
 
-router.patch('/:subscriptionID', async (req: Request, res: Response) => {
+router.patch('/:subscriptionID', validateToken, async (req: Request, res: Response) => {
   const { subscriptionID } = req.params;
   const patches: PatchItem[] = req.body;
 
@@ -110,7 +111,7 @@ router.patch('/:subscriptionID', async (req: Request, res: Response) => {
   res.status(200).json(patchedSubscription);
 });
 
-router.delete('/:subscriptionID', async (req: Request, res: Response) => {
+router.delete('/:subscriptionID', validateToken, async (req: Request, res: Response) => {
   const { subscriptionID } = req.params;
 
   const existingSubscription = await subscriptionStore.get(subscriptionID);

@@ -4,6 +4,7 @@ import { nfStore } from '../storage/nfStore';
 import { UriList } from '../types/uriList';
 import { PatchItem } from '../types/patchItem';
 import { OptionsResponse } from '../types/optionsResponse';
+import { validateToken } from '../middleware/auth';
 
 const router = Router();
 
@@ -83,7 +84,7 @@ router.get('/:nfInstanceID', async (req: Request, res: Response) => {
   res.status(200).json(profile);
 });
 
-router.put('/:nfInstanceID', async (req: Request, res: Response) => {
+router.put('/:nfInstanceID', validateToken, async (req: Request, res: Response) => {
   const { nfInstanceID } = req.params;
   const profile = req.body;
 
@@ -125,7 +126,7 @@ router.put('/:nfInstanceID', async (req: Request, res: Response) => {
   }
 });
 
-router.patch('/:nfInstanceID', async (req: Request, res: Response) => {
+router.patch('/:nfInstanceID', validateToken, async (req: Request, res: Response) => {
   const { nfInstanceID } = req.params;
   const patchOperations: PatchItem[] = req.body;
 
@@ -194,7 +195,7 @@ router.patch('/:nfInstanceID', async (req: Request, res: Response) => {
   }
 });
 
-router.delete('/:nfInstanceID', async (req: Request, res: Response) => {
+router.delete('/:nfInstanceID', validateToken, async (req: Request, res: Response) => {
   const { nfInstanceID } = req.params;
 
   const profile = await nfStore.get(nfInstanceID);
