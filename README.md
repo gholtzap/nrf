@@ -26,6 +26,9 @@ This project implements the NRF component based on 3GPP specifications.
 
 ### NOT IMPLEMENTED FEATURES
 
+#### Missing NFManagement Endpoints
+- Subscription Service - Get Subscription (GET /nnrf-nfm/v1/subscriptions/{subscriptionID})
+
 #### Core NRF Services (3GPP TS 29.510)
 - NFDiscovery Service - Search NF Instances (GET /nnrf-disc/v1/nf-instances)
 - NFDiscovery Service - Get NF Instance by ID (GET /nnrf-disc/v1/nf-instances/{nfInstanceID})
