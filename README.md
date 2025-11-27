@@ -26,12 +26,12 @@ This project implements the NRF component based on 3GPP specifications.
 - Subscription Service - Get Subscription (GET /nnrf-nfm/v1/subscriptions/{subscriptionID})
 - NFDiscovery Service - Search NF Instances (GET /nnrf-disc/v1/nf-instances)
 - NFDiscovery Service - Get NF Instance by ID (GET /nnrf-disc/v1/nf-instances/{nfInstanceID})
+- Bootstrapping Service - Get Bootstrapping Info (GET /bootstrapping)
 
 ### NOT IMPLEMENTED FEATURES
 
 #### Core NRF Services (3GPP TS 29.510)
 - AccessToken Service - Request Access Token (POST /oauth2/token)
-- Bootstrapping Service - Get Bootstrapping Info (GET /bootstrapping)
 
 #### Data Models & Storage
 - NFProfile data structure (all NF types: AMF, SMF, UPF, AUSF, UDM, UDR, PCF, NSSF, NEF, CHF, etc.)
