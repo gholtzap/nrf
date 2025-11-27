@@ -3,8 +3,24 @@ const jsonpatch = require('fast-json-patch');
 import { nfStore } from '../storage/nfStore';
 import { UriList } from '../types/uriList';
 import { PatchItem } from '../types/patchItem';
+import { OptionsResponse } from '../types/optionsResponse';
 
 const router = Router();
+
+router.options('/', (_req: Request, res: Response) => {
+  const optionsResponse: OptionsResponse = {
+    supportedFeatures: undefined
+  };
+
+  res.set('Accept-Encoding', 'gzip, deflate');
+  res.set('Allow', 'GET, OPTIONS');
+
+  if (optionsResponse.supportedFeatures) {
+    res.status(200).json(optionsResponse);
+  } else {
+    res.status(204).send();
+  }
+});
 
 router.get('/', (req: Request, res: Response) => {
   const { 'nf-type': nfType, limit, 'page-number': pageNumber, 'page-size': pageSize } = req.query;
