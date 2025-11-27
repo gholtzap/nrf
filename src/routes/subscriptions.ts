@@ -90,4 +90,24 @@ router.patch('/:subscriptionID', async (req: Request, res: Response) => {
   res.status(200).json(patchedSubscription);
 });
 
+router.delete('/:subscriptionID', async (req: Request, res: Response) => {
+  const { subscriptionID } = req.params;
+
+  const existingSubscription = await subscriptionStore.get(subscriptionID);
+
+  if (!existingSubscription) {
+    return res.status(404).json({
+      type: 'application/problem+json',
+      title: 'Not Found',
+      status: 404,
+      detail: `Subscription with ID ${subscriptionID} not found`,
+      instance: req.originalUrl
+    });
+  }
+
+  await subscriptionStore.delete(subscriptionID);
+
+  res.status(204).send();
+});
+
 export default router;
