@@ -6,6 +6,7 @@ import { PatchItem } from '../types/patchItem';
 import { OptionsResponse } from '../types/optionsResponse';
 import { validateToken } from '../middleware/auth';
 import { heartbeatService } from '../services/heartbeatService';
+import { notificationService } from '../services/notificationService';
 
 const router = Router();
 
@@ -117,14 +118,22 @@ router.put('/:nfInstanceID', validateToken, async (req: Request, res: Response) 
 
   await heartbeatService.recordHeartbeat(nfInstanceID, profile.heartBeatTimer);
 
+  const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
+  const nfInstanceUri = `${baseUrl}/${nfInstanceID}`;
+
+  await notificationService.sendNotifications(
+    profile,
+    'NF_REGISTERED',
+    nfInstanceUri
+  );
+
   const etag = `"${nfInstanceID}-${Date.now()}"`;
   res.set('ETag', etag);
 
   if (isUpdate) {
     res.status(200).json(profile);
   } else {
-    const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
-    res.set('Location', `${baseUrl}/${nfInstanceID}`);
+    res.set('Location', nfInstanceUri);
     res.status(201).json(profile);
   }
 });
@@ -177,6 +186,16 @@ router.patch('/:nfInstanceID', validateToken, async (req: Request, res: Response
 
       await heartbeatService.recordHeartbeat(nfInstanceID, patchResult.newDocument.heartBeatTimer);
 
+      const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
+      const nfInstanceUri = `${baseUrl}/${nfInstanceID}`;
+
+      await notificationService.sendNotifications(
+        patchResult.newDocument,
+        'NF_PROFILE_CHANGED',
+        nfInstanceUri,
+        patchOperations
+      );
+
       const etag = `"${nfInstanceID}-${Date.now()}"`;
       res.set('ETag', etag);
       res.status(200).json(patchResult.newDocument);
@@ -218,6 +237,15 @@ router.delete('/:nfInstanceID', validateToken, async (req: Request, res: Respons
   await nfStore.delete(nfInstanceID);
 
   await heartbeatService.deleteHeartbeat(nfInstanceID);
+
+  const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
+  const nfInstanceUri = `${baseUrl}/${nfInstanceID}`;
+
+  await notificationService.sendNotifications(
+    profile,
+    'NF_DEREGISTERED',
+    nfInstanceUri
+  );
 
   res.status(204).send();
 });

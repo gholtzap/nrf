@@ -2,6 +2,7 @@ import { Collection } from 'mongodb';
 import { HeartbeatMetadata } from '../types/heartbeatMetadata';
 import { mongoClient } from '../db/mongodb';
 import { nfStore } from '../storage/nfStore';
+import { notificationService } from './notificationService';
 
 type HeartbeatConfig = {
   checkInterval: number;
@@ -81,9 +82,20 @@ class HeartbeatService {
       for (const heartbeat of expiredHeartbeats) {
         console.log(`Heartbeat expired for NF Instance ${heartbeat.nfInstanceId}. Auto-deregistering...`);
 
+        const profile = await nfStore.get(heartbeat.nfInstanceId);
+
         await nfStore.delete(heartbeat.nfInstanceId);
 
         await this.deleteHeartbeat(heartbeat.nfInstanceId);
+
+        if (profile) {
+          const nfInstanceUri = `/nnrf-nfm/v1/nf-instances/${heartbeat.nfInstanceId}`;
+          await notificationService.sendNotifications(
+            profile,
+            'NF_DEREGISTERED',
+            nfInstanceUri
+          );
+        }
       }
 
       if (expiredHeartbeats.length > 0) {

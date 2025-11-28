@@ -41,6 +41,11 @@ This project implements the NRF component based on 3GPP specifications.
 - Capacity and priority-based selection
 - Locality-based selection
 - NF set/service set support
+- Webhook-based notifications
+- NF status change notifications (REGISTERED, SUSPENDED, UNDISCOVERABLE)
+- NF profile change notifications
+- Retry mechanism for failed notifications
+- Notification correlation with subscriptions
 
 ### NOT IMPLEMENTED FEATURES
 
@@ -80,11 +85,11 @@ This project implements the NRF component based on 3GPP specifications.
 - Signature verification
 
 #### Notification System
-- Event subscription handling
-- Webhook-based notifications
-- NF status change notifications (REGISTERED, SUSPENDED, UNDISCOVERABLE)
-- NF profile change notifications
-- Retry mechanism for failed notifications
+- Event subscription handling (already implemented)
+- Webhook-based notifications (already implemented)
+- NF status change notifications (already implemented)
+- NF profile change notifications (already implemented)
+- Retry mechanism for failed notifications (already implemented)
 - Notification correlation ID tracking
 
 #### Configuration Management
