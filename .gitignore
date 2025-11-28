@@ -35,6 +35,7 @@ CLAUDE.md
 node_modules/
 dist/
 .env
+config.yaml
 docs/3gpp/
 docs/3gpp/types
 coverage/

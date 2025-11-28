@@ -13,17 +13,24 @@ import { sharedDataStore } from './storage/sharedDataStore';
 import { subscriptionStore } from './storage/subscriptionStore';
 import { tokenStore } from './storage/tokenStore';
 import { heartbeatService } from './services/heartbeatService';
+import { configService } from './services/configService';
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const config = configService.get();
+const PORT = config.server.port;
 
 app.use(cors());
 app.use(express.json());
 
 app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log(`${new Date().toISOString()} ${req.method} ${req.path}`);
+  if (config.logging.level === 'debug' || config.logging.level === 'info') {
+    const logMessage = config.logging.format === 'json'
+      ? JSON.stringify({ timestamp: new Date().toISOString(), method: req.method, path: req.path })
+      : `${new Date().toISOString()} ${req.method} ${req.path}`;
+    console.log(logMessage);
+  }
   next();
 });
 
@@ -49,11 +56,11 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 async function startServer() {
-  const mongoUri = process.env.MONGODB_URI;
-  const dbName = process.env.MONGODB_DB_NAME || 'nrf';
+  const mongoUri = config.database.uri;
+  const dbName = config.database.name;
 
   if (!mongoUri) {
-    console.error('MONGODB_URI environment variable is required');
+    console.error('MONGODB_URI is required in configuration');
     process.exit(1);
   }
 
@@ -63,7 +70,11 @@ async function startServer() {
   sharedDataStore.initialize();
   subscriptionStore.initialize();
   tokenStore.initialize();
-  heartbeatService.initialize();
+  heartbeatService.initialize({
+    checkInterval: config.heartbeat.checkInterval * 1000,
+    gracePeriod: config.heartbeat.gracePeriod * 1000,
+    defaultHeartbeatTimer: config.heartbeat.defaultTimer
+  });
 
   const sampleProfile = {
     nfInstanceId: '550e8400-e29b-41d4-a716-446655440000',
@@ -108,6 +119,10 @@ async function startServer() {
 
   app.listen(PORT, () => {
     console.log(`NRF server listening on port ${PORT}`);
+    console.log(`Configuration loaded from: ${process.env.CONFIG_FILE || 'config.yaml'}`);
+    console.log(`Database: ${dbName}`);
+    console.log(`Log level: ${config.logging.level}`);
+    console.log(`Heartbeat check interval: ${config.heartbeat.checkInterval}s`);
     console.log(`Sample NF Instance available at: http://localhost:${PORT}/nnrf-nfm/v1/nf-instances/${sampleProfile.nfInstanceId}`);
   });
 }

@@ -47,6 +47,13 @@ This project implements the NRF component based on 3GPP specifications.
 - Retry mechanism for failed notifications
 - Notification correlation with subscriptions
 - CORS support
+- YAML/JSON configuration file support
+- Environment variable configuration
+- NRF instance configuration (FQDN, IP, port)
+- Database connection configuration
+- Security configuration (TLS certs, OAuth settings)
+- Heartbeat timer configuration
+- Log level configuration
 
 ### NOT IMPLEMENTED FEATURES
 
@@ -91,15 +98,6 @@ This project implements the NRF component based on 3GPP specifications.
 - NF profile change notifications (already implemented)
 - Retry mechanism for failed notifications (already implemented)
 - Notification correlation ID tracking
-
-#### Configuration Management
-- YAML/JSON configuration file support
-- Environment variable configuration
-- NRF instance configuration (FQDN, IP, port)
-- Database connection configuration
-- Security configuration (TLS certs, OAuth settings)
-- Heartbeat timer configuration
-- Log level configuration
 
 #### 3GPP Compliance Features
 - Support for all NF types defined in TS 23.501

@@ -1,0 +1,28 @@
+server:
+  port: 8080
+  fqdn: nrf.example.com
+  ipAddress: 127.0.0.1
+
+database:
+  uri: mongodb+srv://user:password@cluster.mongodb.net/
+  name: nrf
+
+heartbeat:
+  defaultTimer: 30
+  gracePeriod: 10
+  checkInterval: 5
+
+logging:
+  level: info
+  format: text
+
+security:
+  tlsEnabled: false
+  oauth:
+    enabled: false
+    tokenExpiry: 3600
+
+notification:
+  retryAttempts: 3
+  retryDelay: 5000
+  timeout: 10000

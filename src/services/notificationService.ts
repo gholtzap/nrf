@@ -3,10 +3,19 @@ import { NotificationData } from '../types/notificationData';
 import { NFProfile } from '../types/nfProfile';
 import { SubscriptionData, NotificationEventType } from '../types/subscriptionData';
 import axios from 'axios';
+import { configService } from './configService';
 
 class NotificationService {
-  private maxRetries = 3;
-  private retryDelay = 1000;
+  private maxRetries: number;
+  private retryDelay: number;
+  private timeout: number;
+
+  constructor() {
+    const config = configService.get();
+    this.maxRetries = config.notification.retryAttempts;
+    this.retryDelay = config.notification.retryDelay;
+    this.timeout = config.notification.timeout;
+  }
 
   async sendNotifications(
     nfProfile: NFProfile,
@@ -87,7 +96,7 @@ class NotificationService {
           headers: {
             'Content-Type': 'application/json'
           },
-          timeout: 5000
+          timeout: this.timeout
         });
         return;
       } catch (error) {
