@@ -59,42 +59,36 @@ This project implements the NRF component based on 3GPP specifications.
 - AMF Set/Region filtering
 - TLS/mTLS support
 - Certificate management
+- NFProfile data structure (supports all NF types: AMF, SMF, UPF, AUSF, UDM, UDR, PCF, NSSF, NEF, CHF, etc.)
+- NFService data structure
+- SubscriptionData data structure
+- Persistent storage (MongoDB)
+- NF Instance ID validation
+- TTL and expiry management for NF registrations
+- Heartbeat timer management
+- Complex query parameter parsing and filtering
+- NF type filtering
+- Service name filtering
+- RESTful API routing framework (Express)
+- Response formatting (application/json, application/problem+json)
+- Error handling and problem details (RFC 7807)
+- Request logging
+- NF authentication via OAuth2
 
 ### NOT IMPLEMENTED FEATURES
 
 #### Data Models & Storage
-- NFProfile data structure (all NF types: AMF, SMF, UPF, AUSF, UDM, UDR, PCF, NSSF, NEF, CHF, etc.)
-- NFService data structure
-- SubscriptionData data structure
-- In-memory database/storage system
-- Persistent storage option (MongoDB)
-- NF Instance ID generation and validation
-- TTL and expiry management for NF registrations
-- Heartbeat timer management
-
-#### Search & Discovery Features
-- Complex query parameter parsing and filtering
-- NF type filtering
-- Service name filtering
+- In-memory database/storage system (currently uses MongoDB only)
+- NF Instance ID generation (validation exists, no auto-generation)
 
 #### HTTP/2 & REST Infrastructure
-- HTTP/2 server setup
-- RESTful API routing framework
-- Request validation middleware
-- Response formatting (application/json, application/problem+json)
-- Error handling and problem details (RFC 7807)
-- Request logging
+- HTTP/2 server setup (currently HTTP/1.1 via Express)
+- Comprehensive request validation middleware
 
 #### Authentication & Security
-- NF authentication via OAuth2
 - Signature verification
 
 #### Notification System
-- Event subscription handling (already implemented)
-- Webhook-based notifications (already implemented)
-- NF status change notifications (already implemented)
-- NF profile change notifications (already implemented)
-- Retry mechanism for failed notifications (already implemented)
 - Notification correlation ID tracking
 
 #### 3GPP Compliance Features
