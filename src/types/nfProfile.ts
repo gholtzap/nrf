@@ -42,4 +42,13 @@ export interface NFProfile {
   nfServices?: NFService[];
   nfProfileChangesSupportInd?: boolean;
   nfProfileChangesInd?: boolean;
+  guamiList?: Array<{
+    plmnId: {
+      mcc: string;
+      mnc: string;
+    };
+    amfId: string;
+  }>;
+  amfSetId?: string;
+  amfRegionId?: string;
 }

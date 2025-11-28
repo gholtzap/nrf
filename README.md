@@ -55,6 +55,8 @@ This project implements the NRF component based on 3GPP specifications.
 - Heartbeat timer configuration
 - Log level configuration
 - Rate limiting with configurable limits and time windows
+- GUAMI filtering
+- AMF Set/Region filtering
 
 ### NOT IMPLEMENTED FEATURES
 
@@ -72,8 +74,6 @@ This project implements the NRF component based on 3GPP specifications.
 - Complex query parameter parsing and filtering
 - NF type filtering
 - Service name filtering
-- AMF Set/Region filtering
-- GUAMI filtering
 
 #### HTTP/2 & REST Infrastructure
 - HTTP/2 server setup

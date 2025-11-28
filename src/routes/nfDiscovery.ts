@@ -16,7 +16,10 @@ router.get('/', async (req: Request, res: Response) => {
     'tai': tai,
     'dnn': dnn,
     'preferred-locality': preferredLocality,
-    'min-capacity': minCapacity
+    'min-capacity': minCapacity,
+    'guami': guami,
+    'amf-set-id': amfSetId,
+    'amf-region-id': amfRegionId
   } = req.query;
 
   let profiles = await nfStore.getAll();
@@ -130,6 +133,33 @@ router.get('/', async (req: Request, res: Response) => {
         return profile.capacity !== undefined && profile.capacity >= minCap;
       });
     }
+  }
+
+  if (guami && typeof guami === 'string') {
+    const guamiParts = guami.split('-');
+    if (guamiParts.length >= 3) {
+      const mcc = guamiParts[0];
+      const mnc = guamiParts[1];
+      const amfId = guamiParts[2];
+      profiles = profiles.filter(profile => {
+        if (!profile.guamiList || profile.guamiList.length === 0) {
+          return false;
+        }
+        return profile.guamiList.some(guamiEntry =>
+          guamiEntry.plmnId.mcc === mcc &&
+          guamiEntry.plmnId.mnc === mnc &&
+          guamiEntry.amfId === amfId
+        );
+      });
+    }
+  }
+
+  if (amfSetId && typeof amfSetId === 'string') {
+    profiles = profiles.filter(profile => profile.amfSetId === amfSetId);
+  }
+
+  if (amfRegionId && typeof amfRegionId === 'string') {
+    profiles = profiles.filter(profile => profile.amfRegionId === amfRegionId);
   }
 
   if (preferredLocality && typeof preferredLocality === 'string') {
