@@ -46,6 +46,7 @@ This project implements the NRF component based on 3GPP specifications.
 - NF profile change notifications
 - Retry mechanism for failed notifications
 - Notification correlation with subscriptions
+- CORS support
 
 ### NOT IMPLEMENTED FEATURES
 
@@ -74,7 +75,6 @@ This project implements the NRF component based on 3GPP specifications.
 - Request validation middleware
 - Response formatting (application/json, application/problem+json)
 - Error handling and problem details (RFC 7807)
-- CORS support
 - Rate limiting
 - Request logging
 

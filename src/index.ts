@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import nfInstancesRouter from './routes/nfInstances';
 import sharedDataRouter from './routes/sharedData';
@@ -18,6 +19,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+app.use(cors());
 app.use(express.json());
 
 app.use((req: Request, res: Response, next: NextFunction) => {
