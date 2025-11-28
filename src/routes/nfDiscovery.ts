@@ -12,6 +12,7 @@ router.get('/', async (req: Request, res: Response) => {
     'plmn-id': plmnId,
     'snssai': snssai,
     'tai': tai,
+    'dnn': dnn,
     'preferred-locality': preferredLocality,
     'min-capacity': minCapacity
   } = req.query;
@@ -96,6 +97,15 @@ router.get('/', async (req: Request, res: Response) => {
         );
       });
     }
+  }
+
+  if (dnn && typeof dnn === 'string') {
+    profiles = profiles.filter(profile => {
+      if (!profile.dnnList || profile.dnnList.length === 0) {
+        return false;
+      }
+      return profile.dnnList.includes(dnn);
+    });
   }
 
   if (minCapacity && typeof minCapacity === 'string') {

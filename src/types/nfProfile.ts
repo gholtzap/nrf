@@ -33,6 +33,7 @@ export interface NFProfile {
     sst: number;
     sd?: string;
   }>;
+  dnnList?: string[];
   capacity?: number;
   load?: number;
   locality?: string;

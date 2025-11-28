@@ -37,6 +37,7 @@ This project implements the NRF component based on 3GPP specifications.
 - PLMN ID filtering
 - S-NSSAI filtering
 - TAI filtering
+- DNN filtering
 - Capacity and priority-based selection
 - Locality-based selection
 
@@ -58,7 +59,6 @@ This project implements the NRF component based on 3GPP specifications.
 - Complex query parameter parsing and filtering
 - NF type filtering
 - Service name filtering
-- DNN filtering
 - AMF Set/Region filtering
 - GUAMI filtering
 - NF set/service set support
