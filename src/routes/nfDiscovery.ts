@@ -11,6 +11,7 @@ router.get('/', async (req: Request, res: Response) => {
     'limit': limit,
     'plmn-id': plmnId,
     'snssai': snssai,
+    'tai': tai,
     'preferred-locality': preferredLocality,
     'min-capacity': minCapacity
   } = req.query;
@@ -74,6 +75,25 @@ router.get('/', async (req: Request, res: Response) => {
           }
           return true;
         });
+      });
+    }
+  }
+
+  if (tai && typeof tai === 'string') {
+    const taiParts = tai.split('-');
+    if (taiParts.length >= 3) {
+      const mcc = taiParts[0];
+      const mnc = taiParts[1];
+      const tac = taiParts[2];
+      profiles = profiles.filter(profile => {
+        if (!profile.taiList || profile.taiList.length === 0) {
+          return false;
+        }
+        return profile.taiList.some(taiEntry =>
+          taiEntry.plmnId.mcc === mcc &&
+          taiEntry.plmnId.mnc === mnc &&
+          taiEntry.tac === tac
+        );
       });
     }
   }

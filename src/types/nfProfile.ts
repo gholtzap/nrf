@@ -14,6 +14,13 @@ export interface NFProfile {
     sd?: string;
   }>;
   nsiList?: string[];
+  taiList?: Array<{
+    plmnId: {
+      mcc: string;
+      mnc: string;
+    };
+    tac: string;
+  }>;
   fqdn?: string;
   ipv4Addresses?: string[];
   ipv6Addresses?: string[];

@@ -36,6 +36,7 @@ This project implements the NRF component based on 3GPP specifications.
 - Grace period handling
 - PLMN ID filtering
 - S-NSSAI filtering
+- TAI filtering
 - Capacity and priority-based selection
 - Locality-based selection
 
@@ -58,7 +59,6 @@ This project implements the NRF component based on 3GPP specifications.
 - NF type filtering
 - Service name filtering
 - DNN filtering
-- TAI filtering
 - AMF Set/Region filtering
 - GUAMI filtering
 - NF set/service set support
