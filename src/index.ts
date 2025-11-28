@@ -130,9 +130,13 @@ async function startServer() {
   const tlsOptions = tlsService.loadCertificates(config);
 
   if (tlsOptions) {
-    const httpsServer = tlsService.createHttpsServer(app, tlsOptions);
-    httpsServer.listen(PORT, () => {
-      console.log(`NRF server listening on port ${PORT} with TLS${config.security.mtlsEnabled ? ' (mTLS enabled)' : ''}`);
+    const server = config.server.http2Enabled
+      ? tlsService.createHttp2Server(app, tlsOptions)
+      : tlsService.createHttpsServer(app, tlsOptions);
+
+    const protocol = config.server.http2Enabled ? 'HTTP/2' : 'HTTPS';
+    server.listen(PORT, () => {
+      console.log(`NRF server listening on port ${PORT} with ${protocol}${config.security.mtlsEnabled ? ' (mTLS enabled)' : ''}`);
       console.log(`Configuration loaded from: ${process.env.CONFIG_FILE || 'config.yaml'}`);
       console.log(`Storage: ${storageType}${storageType === 'mongodb' ? ` (${dbName})` : ''}`);
       console.log(`Log level: ${config.logging.level}`);

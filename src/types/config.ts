@@ -5,6 +5,7 @@ export type Config = {
     port: number;
     fqdn?: string;
     ipAddress?: string;
+    http2Enabled: boolean;
   };
   database: {
     type: 'memory' | 'mongodb';

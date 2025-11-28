@@ -1,5 +1,6 @@
 import fs from 'fs';
 import https from 'https';
+import http2 from 'http2';
 import { Config } from '../types/config';
 
 export type TlsOptions = {
@@ -57,6 +58,13 @@ class TlsService {
 
   createHttpsServer(app: any, tlsOptions: TlsOptions): https.Server {
     return https.createServer(tlsOptions, app);
+  }
+
+  createHttp2Server(app: any, tlsOptions: TlsOptions): http2.Http2SecureServer {
+    return http2.createSecureServer({
+      ...tlsOptions,
+      allowHTTP1: true
+    }, app);
   }
 }
 

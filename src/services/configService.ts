@@ -6,6 +6,7 @@ import { Config } from '../types/config';
 const DEFAULT_CONFIG: Config = {
   server: {
     port: 8080,
+    http2Enabled: false,
   },
   database: {
     type: 'memory',
@@ -68,6 +69,7 @@ class ConfigService {
         port: this.getEnvNumber('PORT') || fileConfig.server?.port || DEFAULT_CONFIG.server.port,
         fqdn: process.env.SERVER_FQDN || fileConfig.server?.fqdn || DEFAULT_CONFIG.server.fqdn,
         ipAddress: process.env.SERVER_IP || fileConfig.server?.ipAddress || DEFAULT_CONFIG.server.ipAddress,
+        http2Enabled: this.getEnvBoolean('HTTP2_ENABLED') ?? fileConfig.server?.http2Enabled ?? DEFAULT_CONFIG.server.http2Enabled,
       },
       database: {
         type: (process.env.DATABASE_TYPE as 'memory' | 'mongodb') || fileConfig.database?.type || DEFAULT_CONFIG.database.type,
