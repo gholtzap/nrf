@@ -79,6 +79,7 @@ This project implements the NRF component based on 3GPP specifications.
 - Comprehensive request validation middleware
 - HTTP/2 server support with TLS (configurable, HTTP/1.1 compatible)
 - NF Instance ID auto-generation (POST /nnrf-nfm/v1/nf-instances)
+- API versioning support (v1, v2, etc.)
 
 ### NOT IMPLEMENTED FEATURES
 
@@ -92,7 +93,6 @@ This project implements the NRF component based on 3GPP specifications.
 
 #### 3GPP Compliance Features
 - Support for all NF types defined in TS 23.501
-- API versioning support (v1, v2, etc.)
 - Custom vendor extensions support
 - Compliance with TS 29.510 specifications
 - Compliance with TS 29.500 (general 5G SBI)

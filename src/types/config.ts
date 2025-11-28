@@ -1,3 +1,5 @@
+import { ApiVersion } from './apiVersion';
+
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 export type Config = {
@@ -6,6 +8,11 @@ export type Config = {
     fqdn?: string;
     ipAddress?: string;
     http2Enabled: boolean;
+  };
+  api: {
+    supportedVersions: ApiVersion[];
+    defaultVersion: ApiVersion;
+    deprecatedVersions: ApiVersion[];
   };
   database: {
     type: 'memory' | 'mongodb';

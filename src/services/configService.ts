@@ -8,6 +8,11 @@ const DEFAULT_CONFIG: Config = {
     port: 8080,
     http2Enabled: false,
   },
+  api: {
+    supportedVersions: ['v1'],
+    defaultVersion: 'v1',
+    deprecatedVersions: [],
+  },
   database: {
     type: 'memory',
     uri: '',
@@ -70,6 +75,11 @@ class ConfigService {
         fqdn: process.env.SERVER_FQDN || fileConfig.server?.fqdn || DEFAULT_CONFIG.server.fqdn,
         ipAddress: process.env.SERVER_IP || fileConfig.server?.ipAddress || DEFAULT_CONFIG.server.ipAddress,
         http2Enabled: this.getEnvBoolean('HTTP2_ENABLED') ?? fileConfig.server?.http2Enabled ?? DEFAULT_CONFIG.server.http2Enabled,
+      },
+      api: {
+        supportedVersions: fileConfig.api?.supportedVersions || DEFAULT_CONFIG.api.supportedVersions,
+        defaultVersion: fileConfig.api?.defaultVersion || DEFAULT_CONFIG.api.defaultVersion,
+        deprecatedVersions: fileConfig.api?.deprecatedVersions || DEFAULT_CONFIG.api.deprecatedVersions,
       },
       database: {
         type: (process.env.DATABASE_TYPE as 'memory' | 'mongodb') || fileConfig.database?.type || DEFAULT_CONFIG.database.type,

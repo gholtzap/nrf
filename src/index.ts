@@ -16,6 +16,8 @@ import { heartbeatService } from './services/heartbeatService';
 import { configService } from './services/configService';
 import { rateLimiter } from './middleware/rateLimiter';
 import { tlsService } from './services/tlsService';
+import { validateApiVersion } from './middleware/apiVersion';
+import { apiVersionService } from './services/apiVersionService';
 
 dotenv.config();
 
@@ -27,6 +29,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(rateLimiter);
+app.use(validateApiVersion);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   if (config.logging.level === 'debug' || config.logging.level === 'info') {
@@ -45,8 +48,16 @@ app.use('/nnrf-disc/v1/nf-instances', nfDiscoveryRouter);
 app.use('/bootstrapping', bootstrappingRouter);
 app.use('/oauth2', oauth2Router);
 
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health', (_req: Request, res: Response) => {
   res.status(200).json({ status: 'UP' });
+});
+
+app.get('/versions', (_req: Request, res: Response) => {
+  res.status(200).json({
+    supportedVersions: apiVersionService.getSupportedVersions(),
+    defaultVersion: apiVersionService.getDefaultVersion(),
+    deprecatedVersions: config.api.deprecatedVersions,
+  });
 });
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
