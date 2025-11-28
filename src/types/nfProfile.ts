@@ -5,6 +5,7 @@ export interface NFProfile {
   nfType: string;
   nfStatus: 'REGISTERED' | 'SUSPENDED' | 'UNDISCOVERABLE';
   heartBeatTimer?: number;
+  nfSetId?: string;
   plmnList?: Array<{
     mcc: string;
     mnc: string;

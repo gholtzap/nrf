@@ -1,6 +1,7 @@
 export interface NFService {
   serviceInstanceId: string;
   serviceName: string;
+  setId?: string;
   versions: Array<{
     apiVersionInUri: string;
     apiFullVersion: string;

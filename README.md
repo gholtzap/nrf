@@ -40,6 +40,7 @@ This project implements the NRF component based on 3GPP specifications.
 - DNN filtering
 - Capacity and priority-based selection
 - Locality-based selection
+- NF set/service set support
 
 ### NOT IMPLEMENTED FEATURES
 
@@ -61,7 +62,6 @@ This project implements the NRF component based on 3GPP specifications.
 - Service name filtering
 - AMF Set/Region filtering
 - GUAMI filtering
-- NF set/service set support
 
 #### HTTP/2 & REST Infrastructure
 - HTTP/2 server setup

@@ -8,6 +8,8 @@ router.get('/', async (req: Request, res: Response) => {
     'target-nf-type': targetNfType,
     'requester-nf-type': requesterNfType,
     'service-names': serviceNames,
+    'nf-set-id': nfSetId,
+    'service-set-id': serviceSetId,
     'limit': limit,
     'plmn-id': plmnId,
     'snssai': snssai,
@@ -25,6 +27,10 @@ router.get('/', async (req: Request, res: Response) => {
     profiles = profiles.filter(profile => profile.nfType === targetNfType);
   }
 
+  if (nfSetId && typeof nfSetId === 'string') {
+    profiles = profiles.filter(profile => profile.nfSetId === nfSetId);
+  }
+
   if (serviceNames && typeof serviceNames === 'string') {
     const requestedServices = serviceNames.split(',');
     profiles = profiles.filter(profile => {
@@ -34,6 +40,15 @@ router.get('/', async (req: Request, res: Response) => {
       return requestedServices.some(serviceName =>
         profile.nfServices!.some(nfService => nfService.serviceName === serviceName)
       );
+    });
+  }
+
+  if (serviceSetId && typeof serviceSetId === 'string') {
+    profiles = profiles.filter(profile => {
+      if (!profile.nfServices || profile.nfServices.length === 0) {
+        return false;
+      }
+      return profile.nfServices.some(nfService => nfService.setId === serviceSetId);
     });
   }
 
