@@ -32,6 +32,11 @@ const DEFAULT_CONFIG: Config = {
     retryDelay: 5000,
     timeout: 10000,
   },
+  rateLimit: {
+    enabled: true,
+    windowMs: 60000,
+    maxRequests: 100,
+  },
 };
 
 class ConfigService {
@@ -89,6 +94,11 @@ class ConfigService {
         retryAttempts: this.getEnvNumber('NOTIFICATION_RETRY_ATTEMPTS') || fileConfig.notification?.retryAttempts || DEFAULT_CONFIG.notification.retryAttempts,
         retryDelay: this.getEnvNumber('NOTIFICATION_RETRY_DELAY') || fileConfig.notification?.retryDelay || DEFAULT_CONFIG.notification.retryDelay,
         timeout: this.getEnvNumber('NOTIFICATION_TIMEOUT') || fileConfig.notification?.timeout || DEFAULT_CONFIG.notification.timeout,
+      },
+      rateLimit: {
+        enabled: this.getEnvBoolean('RATE_LIMIT_ENABLED') ?? fileConfig.rateLimit?.enabled ?? DEFAULT_CONFIG.rateLimit.enabled,
+        windowMs: this.getEnvNumber('RATE_LIMIT_WINDOW_MS') || fileConfig.rateLimit?.windowMs || DEFAULT_CONFIG.rateLimit.windowMs,
+        maxRequests: this.getEnvNumber('RATE_LIMIT_MAX_REQUESTS') || fileConfig.rateLimit?.maxRequests || DEFAULT_CONFIG.rateLimit.maxRequests,
       },
     };
 

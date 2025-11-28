@@ -34,4 +34,9 @@ export type Config = {
     retryDelay: number;
     timeout: number;
   };
+  rateLimit: {
+    enabled: boolean;
+    windowMs: number;
+    maxRequests: number;
+  };
 };

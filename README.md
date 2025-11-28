@@ -54,10 +54,9 @@ This project implements the NRF component based on 3GPP specifications.
 - Security configuration (TLS certs, OAuth settings)
 - Heartbeat timer configuration
 - Log level configuration
+- Rate limiting with configurable limits and time windows
 
 ### NOT IMPLEMENTED FEATURES
-
-#### Core NRF Services (3GPP TS 29.510)
 
 #### Data Models & Storage
 - NFProfile data structure (all NF types: AMF, SMF, UPF, AUSF, UDM, UDR, PCF, NSSF, NEF, CHF, etc.)
@@ -82,7 +81,6 @@ This project implements the NRF component based on 3GPP specifications.
 - Request validation middleware
 - Response formatting (application/json, application/problem+json)
 - Error handling and problem details (RFC 7807)
-- Rate limiting
 - Request logging
 
 #### Authentication & Security

@@ -14,6 +14,7 @@ import { subscriptionStore } from './storage/subscriptionStore';
 import { tokenStore } from './storage/tokenStore';
 import { heartbeatService } from './services/heartbeatService';
 import { configService } from './services/configService';
+import { rateLimiter } from './middleware/rateLimiter';
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ const PORT = config.server.port;
 
 app.use(cors());
 app.use(express.json());
+app.use(rateLimiter);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   if (config.logging.level === 'debug' || config.logging.level === 'info') {
