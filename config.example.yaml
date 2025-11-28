@@ -18,6 +18,10 @@ logging:
 
 security:
   tlsEnabled: false
+  certPath: ./certs/server.crt
+  keyPath: ./certs/server.key
+  caPath: ./certs/ca.crt
+  mtlsEnabled: false
   oauth:
     enabled: false
     tokenExpiry: 3600

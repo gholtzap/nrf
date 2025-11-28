@@ -15,6 +15,7 @@ import { tokenStore } from './storage/tokenStore';
 import { heartbeatService } from './services/heartbeatService';
 import { configService } from './services/configService';
 import { rateLimiter } from './middleware/rateLimiter';
+import { tlsService } from './services/tlsService';
 
 dotenv.config();
 
@@ -119,14 +120,28 @@ async function startServer() {
 
   await nfStore.set(sampleProfile.nfInstanceId, sampleProfile);
 
-  app.listen(PORT, () => {
-    console.log(`NRF server listening on port ${PORT}`);
-    console.log(`Configuration loaded from: ${process.env.CONFIG_FILE || 'config.yaml'}`);
-    console.log(`Database: ${dbName}`);
-    console.log(`Log level: ${config.logging.level}`);
-    console.log(`Heartbeat check interval: ${config.heartbeat.checkInterval}s`);
-    console.log(`Sample NF Instance available at: http://localhost:${PORT}/nnrf-nfm/v1/nf-instances/${sampleProfile.nfInstanceId}`);
-  });
+  const tlsOptions = tlsService.loadCertificates(config);
+
+  if (tlsOptions) {
+    const httpsServer = tlsService.createHttpsServer(app, tlsOptions);
+    httpsServer.listen(PORT, () => {
+      console.log(`NRF server listening on port ${PORT} with TLS${config.security.mtlsEnabled ? ' (mTLS enabled)' : ''}`);
+      console.log(`Configuration loaded from: ${process.env.CONFIG_FILE || 'config.yaml'}`);
+      console.log(`Database: ${dbName}`);
+      console.log(`Log level: ${config.logging.level}`);
+      console.log(`Heartbeat check interval: ${config.heartbeat.checkInterval}s`);
+      console.log(`Sample NF Instance available at: https://localhost:${PORT}/nnrf-nfm/v1/nf-instances/${sampleProfile.nfInstanceId}`);
+    });
+  } else {
+    app.listen(PORT, () => {
+      console.log(`NRF server listening on port ${PORT}`);
+      console.log(`Configuration loaded from: ${process.env.CONFIG_FILE || 'config.yaml'}`);
+      console.log(`Database: ${dbName}`);
+      console.log(`Log level: ${config.logging.level}`);
+      console.log(`Heartbeat check interval: ${config.heartbeat.checkInterval}s`);
+      console.log(`Sample NF Instance available at: http://localhost:${PORT}/nnrf-nfm/v1/nf-instances/${sampleProfile.nfInstanceId}`);
+    });
+  }
 }
 
 startServer().catch(err => {

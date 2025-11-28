@@ -57,6 +57,8 @@ This project implements the NRF component based on 3GPP specifications.
 - Rate limiting with configurable limits and time windows
 - GUAMI filtering
 - AMF Set/Region filtering
+- TLS/mTLS support
+- Certificate management
 
 ### NOT IMPLEMENTED FEATURES
 
@@ -85,8 +87,6 @@ This project implements the NRF component based on 3GPP specifications.
 
 #### Authentication & Security
 - NF authentication via OAuth2
-- TLS/mTLS support
-- Certificate management
 - Signature verification
 
 #### Notification System

@@ -22,6 +22,7 @@ const DEFAULT_CONFIG: Config = {
   },
   security: {
     tlsEnabled: false,
+    mtlsEnabled: false,
     oauth: {
       enabled: false,
       tokenExpiry: 3600,
@@ -85,6 +86,7 @@ class ConfigService {
         certPath: process.env.TLS_CERT_PATH || fileConfig.security?.certPath || DEFAULT_CONFIG.security.certPath,
         keyPath: process.env.TLS_KEY_PATH || fileConfig.security?.keyPath || DEFAULT_CONFIG.security.keyPath,
         caPath: process.env.TLS_CA_PATH || fileConfig.security?.caPath || DEFAULT_CONFIG.security.caPath,
+        mtlsEnabled: this.getEnvBoolean('MTLS_ENABLED') ?? fileConfig.security?.mtlsEnabled ?? DEFAULT_CONFIG.security.mtlsEnabled,
         oauth: {
           enabled: this.getEnvBoolean('OAUTH_ENABLED') ?? fileConfig.security?.oauth.enabled ?? DEFAULT_CONFIG.security.oauth.enabled,
           tokenExpiry: this.getEnvNumber('OAUTH_TOKEN_EXPIRY') || fileConfig.security?.oauth.tokenExpiry || DEFAULT_CONFIG.security.oauth.tokenExpiry,

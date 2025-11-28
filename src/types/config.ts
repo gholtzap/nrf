@@ -24,6 +24,7 @@ export type Config = {
     certPath?: string;
     keyPath?: string;
     caPath?: string;
+    mtlsEnabled: boolean;
     oauth: {
       enabled: boolean;
       tokenExpiry: number;
