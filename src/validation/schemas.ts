@@ -86,6 +86,35 @@ export const NFProfileSchema = z.object({
   amfRegionId: z.string().regex(/^[0-9A-Fa-f]{2}$/).optional(),
 });
 
+export const NFProfileCreateSchema = z.object({
+  nfInstanceId: UuidSchema.optional(),
+  nfType: z.string().min(1),
+  nfStatus: z.enum(['REGISTERED', 'SUSPENDED', 'UNDISCOVERABLE']),
+  heartBeatTimer: z.number().int().min(0).optional(),
+  nfSetId: z.string().optional(),
+  plmnList: z.array(PlmnIdSchema).optional(),
+  sNssais: z.array(SNssaiSchema).optional(),
+  nsiList: z.array(z.string()).optional(),
+  taiList: z.array(TaiSchema).optional(),
+  fqdn: z.string().optional(),
+  ipv4Addresses: z.array(z.string().regex(ipv4Regex, 'Invalid IPv4 address')).optional(),
+  ipv6Addresses: z.array(z.string().regex(ipv6Regex, 'Invalid IPv6 address')).optional(),
+  allowedPlmns: z.array(PlmnIdSchema).optional(),
+  allowedNfTypes: z.array(z.string()).optional(),
+  allowedNssais: z.array(SNssaiSchema).optional(),
+  dnnList: z.array(z.string()).optional(),
+  capacity: z.number().int().min(0).max(65535).optional(),
+  load: z.number().int().min(0).max(100).optional(),
+  locality: z.string().optional(),
+  priority: z.number().int().min(0).max(65535).optional(),
+  nfServices: z.array(NFServiceSchema).optional(),
+  nfProfileChangesSupportInd: z.boolean().optional(),
+  nfProfileChangesInd: z.boolean().optional(),
+  guamiList: z.array(GuamiSchema).optional(),
+  amfSetId: z.string().regex(/^[0-9A-Fa-f]{3}$/).optional(),
+  amfRegionId: z.string().regex(/^[0-9A-Fa-f]{2}$/).optional(),
+});
+
 export const PatchItemSchema = z.object({
   op: z.enum(['add', 'remove', 'replace', 'move', 'copy', 'test']),
   path: z.string().min(1),

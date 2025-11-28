@@ -78,11 +78,11 @@ This project implements the NRF component based on 3GPP specifications.
 - Configurable storage backends (memory/MongoDB)
 - Comprehensive request validation middleware
 - HTTP/2 server support with TLS (configurable, HTTP/1.1 compatible)
+- NF Instance ID auto-generation (POST /nnrf-nfm/v1/nf-instances)
 
 ### NOT IMPLEMENTED FEATURES
 
 #### Data Models & Storage
-- NF Instance ID generation (validation exists, no auto-generation)
 
 #### Authentication & Security
 - Signature verification

@@ -10,10 +10,12 @@ import { notificationService } from '../services/notificationService';
 import { validate, validateContentType } from '../middleware/validation';
 import {
   NFProfileSchema,
+  NFProfileCreateSchema,
   PatchArraySchema,
   PathParamSchema,
   NFInstancesQuerySchema,
 } from '../validation/schemas';
+import { generateNfInstanceId } from '../utils/uuid';
 
 const router = Router();
 
@@ -23,13 +25,39 @@ router.options('/', (_req: Request, res: Response) => {
   };
 
   res.set('Accept-Encoding', 'gzip, deflate');
-  res.set('Allow', 'GET, OPTIONS');
+  res.set('Allow', 'GET, POST, OPTIONS');
 
   if (optionsResponse.supportedFeatures) {
     res.status(200).json(optionsResponse);
   } else {
     res.status(204).send();
   }
+});
+
+router.post('/', validateContentType(['application/json']), validate({ body: NFProfileCreateSchema }), validateToken, async (req: Request, res: Response) => {
+  const profile = req.body;
+
+  const nfInstanceID = profile.nfInstanceId || generateNfInstanceId();
+
+  profile.nfInstanceId = nfInstanceID;
+
+  await nfStore.set(nfInstanceID, profile);
+
+  await heartbeatService.recordHeartbeat(nfInstanceID, profile.heartBeatTimer);
+
+  const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
+  const nfInstanceUri = `${baseUrl}/${nfInstanceID}`;
+
+  await notificationService.sendNotifications(
+    profile,
+    'NF_REGISTERED',
+    nfInstanceUri
+  );
+
+  const etag = `"${nfInstanceID}-${Date.now()}"`;
+  res.set('ETag', etag);
+  res.set('Location', nfInstanceUri);
+  res.status(201).json(profile);
 });
 
 router.get('/', validate({ query: NFInstancesQuerySchema }), async (req: Request, res: Response) => {
