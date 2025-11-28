@@ -1,9 +1,11 @@
 import { Router, Request, Response } from 'express';
 import { nfStore } from '../storage/nfStore';
+import { validate } from '../middleware/validation';
+import { NFDiscoveryQuerySchema, PathParamSchema } from '../validation/schemas';
 
 const router = Router();
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', validate({ query: NFDiscoveryQuerySchema }), async (req: Request, res: Response) => {
   const {
     'target-nf-type': targetNfType,
     'requester-nf-type': requesterNfType,
@@ -208,7 +210,7 @@ router.get('/', async (req: Request, res: Response) => {
   });
 });
 
-router.get('/:nfInstanceID', async (req: Request, res: Response) => {
+router.get('/:nfInstanceID', validate({ params: PathParamSchema }), async (req: Request, res: Response) => {
   const { nfInstanceID } = req.params;
 
   const profile = await nfStore.get(nfInstanceID);

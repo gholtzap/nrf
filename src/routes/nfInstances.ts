@@ -7,6 +7,13 @@ import { OptionsResponse } from '../types/optionsResponse';
 import { validateToken } from '../middleware/auth';
 import { heartbeatService } from '../services/heartbeatService';
 import { notificationService } from '../services/notificationService';
+import { validate, validateContentType } from '../middleware/validation';
+import {
+  NFProfileSchema,
+  PatchArraySchema,
+  PathParamSchema,
+  NFInstancesQuerySchema,
+} from '../validation/schemas';
 
 const router = Router();
 
@@ -25,7 +32,7 @@ router.options('/', (_req: Request, res: Response) => {
   }
 });
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', validate({ query: NFInstancesQuerySchema }), async (req: Request, res: Response) => {
   const { 'nf-type': nfType, limit, 'page-number': pageNumber, 'page-size': pageSize } = req.query;
 
   let profiles = await nfStore.getAll();
@@ -67,7 +74,7 @@ router.get('/', async (req: Request, res: Response) => {
   res.status(200).json(uriList);
 });
 
-router.get('/:nfInstanceID', async (req: Request, res: Response) => {
+router.get('/:nfInstanceID', validate({ params: PathParamSchema }), async (req: Request, res: Response) => {
   const { nfInstanceID } = req.params;
 
   const profile = await nfStore.get(nfInstanceID);
@@ -86,19 +93,9 @@ router.get('/:nfInstanceID', async (req: Request, res: Response) => {
   res.status(200).json(profile);
 });
 
-router.put('/:nfInstanceID', validateToken, async (req: Request, res: Response) => {
+router.put('/:nfInstanceID', validateContentType(['application/json']), validate({ params: PathParamSchema, body: NFProfileSchema }), validateToken, async (req: Request, res: Response) => {
   const { nfInstanceID } = req.params;
   const profile = req.body;
-
-  if (!profile || typeof profile !== 'object') {
-    return res.status(400).json({
-      type: 'application/problem+json',
-      title: 'Bad Request',
-      status: 400,
-      detail: 'Request body must contain a valid NFProfile',
-      instance: req.originalUrl
-    });
-  }
 
   if (profile.nfInstanceId && profile.nfInstanceId !== nfInstanceID) {
     return res.status(400).json({
@@ -138,19 +135,9 @@ router.put('/:nfInstanceID', validateToken, async (req: Request, res: Response) 
   }
 });
 
-router.patch('/:nfInstanceID', validateToken, async (req: Request, res: Response) => {
+router.patch('/:nfInstanceID', validateContentType(['application/json-patch+json', 'application/json']), validate({ params: PathParamSchema, body: PatchArraySchema }), validateToken, async (req: Request, res: Response) => {
   const { nfInstanceID } = req.params;
   const patchOperations: PatchItem[] = req.body;
-
-  if (!Array.isArray(patchOperations) || patchOperations.length === 0) {
-    return res.status(400).json({
-      type: 'application/problem+json',
-      title: 'Bad Request',
-      status: 400,
-      detail: 'Request body must contain an array of patch operations',
-      instance: req.originalUrl
-    });
-  }
 
   const profile = await nfStore.get(nfInstanceID);
 
@@ -219,7 +206,7 @@ router.patch('/:nfInstanceID', validateToken, async (req: Request, res: Response
   }
 });
 
-router.delete('/:nfInstanceID', validateToken, async (req: Request, res: Response) => {
+router.delete('/:nfInstanceID', validate({ params: PathParamSchema }), validateToken, async (req: Request, res: Response) => {
   const { nfInstanceID } = req.params;
 
   const profile = await nfStore.get(nfInstanceID);

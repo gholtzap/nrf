@@ -2,47 +2,13 @@ import { Router, Request, Response } from 'express';
 import crypto from 'crypto';
 import { AccessTokenRequest, AccessTokenResponse, AccessTokenError } from '../types/accessToken';
 import { tokenStore } from '../storage/tokenStore';
+import { validate, validateContentType } from '../middleware/validation';
+import { AccessTokenRequestSchema } from '../validation/schemas';
 
 const router = Router();
 
-router.post('/token', async (req: Request, res: Response) => {
+router.post('/token', validateContentType(['application/x-www-form-urlencoded', 'application/json']), validate({ body: AccessTokenRequestSchema }), async (req: Request, res: Response) => {
   const body = req.body as AccessTokenRequest;
-
-  if (!body.grant_type) {
-    const error: AccessTokenError = {
-      error: 'invalid_request',
-      error_description: 'grant_type is required'
-    };
-    res.status(400).json(error);
-    return;
-  }
-
-  if (body.grant_type !== 'client_credentials') {
-    const error: AccessTokenError = {
-      error: 'unsupported_grant_type',
-      error_description: 'Only client_credentials grant type is supported'
-    };
-    res.status(400).json(error);
-    return;
-  }
-
-  if (!body.nfInstanceId) {
-    const error: AccessTokenError = {
-      error: 'invalid_request',
-      error_description: 'nfInstanceId is required'
-    };
-    res.status(400).json(error);
-    return;
-  }
-
-  if (!body.scope) {
-    const error: AccessTokenError = {
-      error: 'invalid_request',
-      error_description: 'scope is required'
-    };
-    res.status(400).json(error);
-    return;
-  }
 
   const accessToken = crypto.randomBytes(32).toString('hex');
   const expiresIn = 3600;

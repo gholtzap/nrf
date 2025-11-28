@@ -3,10 +3,16 @@ import { sharedDataStore } from '../storage/sharedDataStore';
 import * as jsonpatch from 'fast-json-patch';
 import { PatchItem } from '../types/patchItem';
 import { validateToken } from '../middleware/auth';
+import { validate, validateContentType } from '../middleware/validation';
+import {
+  SharedDataSchema,
+  PatchArraySchema,
+  SharedDataPathParamSchema,
+} from '../validation/schemas';
 
 const router = Router();
 
-router.get('/:sharedDataId', async (req: Request, res: Response) => {
+router.get('/:sharedDataId', validate({ params: SharedDataPathParamSchema }), async (req: Request, res: Response) => {
   const { sharedDataId } = req.params;
 
   const sharedData = await sharedDataStore.get(sharedDataId);
@@ -25,19 +31,9 @@ router.get('/:sharedDataId', async (req: Request, res: Response) => {
   res.status(200).json(sharedData);
 });
 
-router.put('/:sharedDataId', validateToken, async (req: Request, res: Response) => {
+router.put('/:sharedDataId', validateContentType(['application/json']), validate({ params: SharedDataPathParamSchema, body: SharedDataSchema }), validateToken, async (req: Request, res: Response) => {
   const { sharedDataId } = req.params;
   const sharedData = req.body;
-
-  if (!sharedData || typeof sharedData !== 'object') {
-    return res.status(400).json({
-      type: 'application/problem+json',
-      title: 'Bad Request',
-      status: 400,
-      detail: 'Request body must contain valid SharedData',
-      instance: req.originalUrl
-    });
-  }
 
   if (sharedData.sharedDataId && sharedData.sharedDataId !== sharedDataId) {
     return res.status(400).json({
@@ -67,19 +63,9 @@ router.put('/:sharedDataId', validateToken, async (req: Request, res: Response) 
   }
 });
 
-router.patch('/:sharedDataId', validateToken, async (req: Request, res: Response) => {
+router.patch('/:sharedDataId', validateContentType(['application/json-patch+json', 'application/json']), validate({ params: SharedDataPathParamSchema, body: PatchArraySchema }), validateToken, async (req: Request, res: Response) => {
   const { sharedDataId } = req.params;
   const patches: PatchItem[] = req.body;
-
-  if (!Array.isArray(patches) || patches.length === 0) {
-    return res.status(400).json({
-      type: 'application/problem+json',
-      title: 'Bad Request',
-      status: 400,
-      detail: 'Request body must contain a non-empty array of patch operations',
-      instance: req.originalUrl
-    });
-  }
 
   const existingData = await sharedDataStore.get(sharedDataId);
 
@@ -114,7 +100,7 @@ router.patch('/:sharedDataId', validateToken, async (req: Request, res: Response
   res.status(200).json(patchedData);
 });
 
-router.delete('/:sharedDataId', validateToken, async (req: Request, res: Response) => {
+router.delete('/:sharedDataId', validate({ params: SharedDataPathParamSchema }), validateToken, async (req: Request, res: Response) => {
   const { sharedDataId } = req.params;
 
   const exists = await sharedDataStore.has(sharedDataId);

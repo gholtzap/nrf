@@ -5,10 +5,16 @@ import { randomUUID } from 'crypto';
 import * as jsonpatch from 'fast-json-patch';
 import { PatchItem } from '../types/patchItem';
 import { validateToken } from '../middleware/auth';
+import { validate, validateContentType } from '../middleware/validation';
+import {
+  SubscriptionDataSchema,
+  PatchArraySchema,
+  SubscriptionPathParamSchema,
+} from '../validation/schemas';
 
 const router = Router();
 
-router.get('/:subscriptionID', async (req: Request, res: Response) => {
+router.get('/:subscriptionID', validate({ params: SubscriptionPathParamSchema }), async (req: Request, res: Response) => {
   const { subscriptionID } = req.params;
 
   const existingSubscription = await subscriptionStore.get(subscriptionID);
@@ -28,28 +34,8 @@ router.get('/:subscriptionID', async (req: Request, res: Response) => {
   res.status(200).json(existingSubscription);
 });
 
-router.post('/', validateToken, async (req: Request, res: Response) => {
+router.post('/', validateContentType(['application/json']), validate({ body: SubscriptionDataSchema }), validateToken, async (req: Request, res: Response) => {
   const subscriptionData: SubscriptionData = req.body;
-
-  if (!subscriptionData || typeof subscriptionData !== 'object') {
-    return res.status(400).json({
-      type: 'application/problem+json',
-      title: 'Bad Request',
-      status: 400,
-      detail: 'Request body must contain valid SubscriptionData',
-      instance: req.originalUrl
-    });
-  }
-
-  if (!subscriptionData.nfStatusNotificationUri) {
-    return res.status(400).json({
-      type: 'application/problem+json',
-      title: 'Bad Request',
-      status: 400,
-      detail: 'nfStatusNotificationUri is required',
-      instance: req.originalUrl
-    });
-  }
 
   const subscriptionId = randomUUID();
   subscriptionData.subscriptionId = subscriptionId;
@@ -64,19 +50,9 @@ router.post('/', validateToken, async (req: Request, res: Response) => {
   res.status(201).json(subscriptionData);
 });
 
-router.patch('/:subscriptionID', validateToken, async (req: Request, res: Response) => {
+router.patch('/:subscriptionID', validateContentType(['application/json-patch+json', 'application/json']), validate({ params: SubscriptionPathParamSchema, body: PatchArraySchema }), validateToken, async (req: Request, res: Response) => {
   const { subscriptionID } = req.params;
   const patches: PatchItem[] = req.body;
-
-  if (!Array.isArray(patches) || patches.length === 0) {
-    return res.status(400).json({
-      type: 'application/problem+json',
-      title: 'Bad Request',
-      status: 400,
-      detail: 'Request body must contain a non-empty array of patch operations',
-      instance: req.originalUrl
-    });
-  }
 
   const existingSubscription = await subscriptionStore.get(subscriptionID);
 
@@ -111,7 +87,7 @@ router.patch('/:subscriptionID', validateToken, async (req: Request, res: Respon
   res.status(200).json(patchedSubscription);
 });
 
-router.delete('/:subscriptionID', validateToken, async (req: Request, res: Response) => {
+router.delete('/:subscriptionID', validate({ params: SubscriptionPathParamSchema }), validateToken, async (req: Request, res: Response) => {
   const { subscriptionID } = req.params;
 
   const existingSubscription = await subscriptionStore.get(subscriptionID);

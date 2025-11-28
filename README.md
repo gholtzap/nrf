@@ -76,6 +76,7 @@ This project implements the NRF component based on 3GPP specifications.
 - NF authentication via OAuth2
 - In-memory database/storage system
 - Configurable storage backends (memory/MongoDB)
+- Comprehensive request validation middleware
 
 ### NOT IMPLEMENTED FEATURES
 
@@ -84,7 +85,6 @@ This project implements the NRF component based on 3GPP specifications.
 
 #### HTTP/2 & REST Infrastructure
 - HTTP/2 server setup (currently HTTP/1.1 via Express)
-- Comprehensive request validation middleware
 
 #### Authentication & Security
 - Signature verification
