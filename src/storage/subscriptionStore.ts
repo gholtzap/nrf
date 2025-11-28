@@ -1,12 +1,11 @@
-import { Collection } from 'mongodb';
 import { SubscriptionData } from '../types/subscriptionData';
-import { mongoClient } from '../db/mongodb';
+import { storageAdapter, StorageCollection } from '../db/storageAdapter';
 
 class SubscriptionStore {
-  private collection: Collection<SubscriptionData> | null = null;
+  private collection: StorageCollection<SubscriptionData> | null = null;
 
   initialize(): void {
-    this.collection = mongoClient.getCollection<SubscriptionData>('subscriptions');
+    this.collection = storageAdapter.getCollection<SubscriptionData>('subscriptions', 'subscriptionId');
   }
 
   async get(subscriptionId: string): Promise<SubscriptionData | null> {
@@ -39,7 +38,8 @@ class SubscriptionStore {
     if (!this.collection) {
       throw new Error('SubscriptionStore not initialized');
     }
-    return await this.collection.find({}).toArray();
+    const cursor = await this.collection.find({});
+    return await cursor.toArray();
   }
 
   async has(subscriptionId: string): Promise<boolean> {

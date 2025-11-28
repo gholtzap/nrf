@@ -74,11 +74,12 @@ This project implements the NRF component based on 3GPP specifications.
 - Error handling and problem details (RFC 7807)
 - Request logging
 - NF authentication via OAuth2
+- In-memory database/storage system
+- Configurable storage backends (memory/MongoDB)
 
 ### NOT IMPLEMENTED FEATURES
 
 #### Data Models & Storage
-- In-memory database/storage system (currently uses MongoDB only)
 - NF Instance ID generation (validation exists, no auto-generation)
 
 #### HTTP/2 & REST Infrastructure

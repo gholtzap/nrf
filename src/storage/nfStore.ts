@@ -1,12 +1,11 @@
-import { Collection } from 'mongodb';
 import { NFProfile } from '../types/nfProfile';
-import { mongoClient } from '../db/mongodb';
+import { storageAdapter, StorageCollection } from '../db/storageAdapter';
 
 class NFStore {
-  private collection: Collection<NFProfile> | null = null;
+  private collection: StorageCollection<NFProfile> | null = null;
 
   initialize(): void {
-    this.collection = mongoClient.getCollection<NFProfile>('nf-instances');
+    this.collection = storageAdapter.getCollection<NFProfile>('nf-instances', 'nfInstanceId');
   }
 
   async get(nfInstanceId: string): Promise<NFProfile | null> {
@@ -39,7 +38,8 @@ class NFStore {
     if (!this.collection) {
       throw new Error('NFStore not initialized');
     }
-    return await this.collection.find({}).toArray();
+    const cursor = await this.collection.find({});
+    return await cursor.toArray();
   }
 
   async has(nfInstanceId: string): Promise<boolean> {

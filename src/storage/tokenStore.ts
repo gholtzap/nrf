@@ -1,12 +1,11 @@
-import { Collection } from 'mongodb';
 import { StoredAccessToken } from '../types/accessToken';
-import { mongoClient } from '../db/mongodb';
+import { storageAdapter, StorageCollection } from '../db/storageAdapter';
 
 class TokenStore {
-  private collection: Collection<StoredAccessToken> | null = null;
+  private collection: StorageCollection<StoredAccessToken> | null = null;
 
   initialize(): void {
-    this.collection = mongoClient.getCollection<StoredAccessToken>('access-tokens');
+    this.collection = storageAdapter.getCollection<StoredAccessToken>('access-tokens', 'access_token');
   }
 
   async store(token: StoredAccessToken): Promise<void> {

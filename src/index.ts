@@ -7,7 +7,7 @@ import subscriptionsRouter from './routes/subscriptions';
 import nfDiscoveryRouter from './routes/nfDiscovery';
 import bootstrappingRouter from './routes/bootstrapping';
 import oauth2Router from './routes/oauth2';
-import { mongoClient } from './db/mongodb';
+import { storageAdapter } from './db/storageAdapter';
 import { nfStore } from './storage/nfStore';
 import { sharedDataStore } from './storage/sharedDataStore';
 import { subscriptionStore } from './storage/subscriptionStore';
@@ -59,15 +59,21 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 async function startServer() {
+  const storageType = config.database.type;
   const mongoUri = config.database.uri;
   const dbName = config.database.name;
 
-  if (!mongoUri) {
-    console.error('MONGODB_URI is required in configuration');
-    process.exit(1);
+  if (storageType === 'mongodb') {
+    if (!mongoUri) {
+      console.error('MONGODB_URI is required when using mongodb storage type');
+      process.exit(1);
+    }
+    await storageAdapter.initialize('mongodb', mongoUri, dbName);
+    console.log(`Using MongoDB storage: ${dbName}`);
+  } else {
+    await storageAdapter.initialize('memory');
+    console.log('Using in-memory storage');
   }
-
-  await mongoClient.connect(mongoUri, dbName);
 
   nfStore.initialize();
   sharedDataStore.initialize();
@@ -127,7 +133,7 @@ async function startServer() {
     httpsServer.listen(PORT, () => {
       console.log(`NRF server listening on port ${PORT} with TLS${config.security.mtlsEnabled ? ' (mTLS enabled)' : ''}`);
       console.log(`Configuration loaded from: ${process.env.CONFIG_FILE || 'config.yaml'}`);
-      console.log(`Database: ${dbName}`);
+      console.log(`Storage: ${storageType}${storageType === 'mongodb' ? ` (${dbName})` : ''}`);
       console.log(`Log level: ${config.logging.level}`);
       console.log(`Heartbeat check interval: ${config.heartbeat.checkInterval}s`);
       console.log(`Sample NF Instance available at: https://localhost:${PORT}/nnrf-nfm/v1/nf-instances/${sampleProfile.nfInstanceId}`);
@@ -136,7 +142,7 @@ async function startServer() {
     app.listen(PORT, () => {
       console.log(`NRF server listening on port ${PORT}`);
       console.log(`Configuration loaded from: ${process.env.CONFIG_FILE || 'config.yaml'}`);
-      console.log(`Database: ${dbName}`);
+      console.log(`Storage: ${storageType}${storageType === 'mongodb' ? ` (${dbName})` : ''}`);
       console.log(`Log level: ${config.logging.level}`);
       console.log(`Heartbeat check interval: ${config.heartbeat.checkInterval}s`);
       console.log(`Sample NF Instance available at: http://localhost:${PORT}/nnrf-nfm/v1/nf-instances/${sampleProfile.nfInstanceId}`);

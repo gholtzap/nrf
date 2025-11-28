@@ -1,12 +1,11 @@
-import { Collection } from 'mongodb';
 import { SharedData } from '../types/sharedData';
-import { mongoClient } from '../db/mongodb';
+import { storageAdapter, StorageCollection } from '../db/storageAdapter';
 
 class SharedDataStore {
-  private collection: Collection<SharedData> | null = null;
+  private collection: StorageCollection<SharedData> | null = null;
 
   initialize(): void {
-    this.collection = mongoClient.getCollection<SharedData>('shared-data');
+    this.collection = storageAdapter.getCollection<SharedData>('shared-data', 'sharedDataId');
   }
 
   async get(sharedDataId: string): Promise<SharedData | null> {
@@ -39,7 +38,8 @@ class SharedDataStore {
     if (!this.collection) {
       throw new Error('SharedDataStore not initialized');
     }
-    return await this.collection.find({}).toArray();
+    const cursor = await this.collection.find({});
+    return await cursor.toArray();
   }
 
   async has(sharedDataId: string): Promise<boolean> {

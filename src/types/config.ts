@@ -7,6 +7,7 @@ export type Config = {
     ipAddress?: string;
   };
   database: {
+    type: 'memory' | 'mongodb';
     uri: string;
     name: string;
   };

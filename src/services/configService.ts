@@ -8,6 +8,7 @@ const DEFAULT_CONFIG: Config = {
     port: 8080,
   },
   database: {
+    type: 'memory',
     uri: '',
     name: 'nrf',
   },
@@ -69,6 +70,7 @@ class ConfigService {
         ipAddress: process.env.SERVER_IP || fileConfig.server?.ipAddress || DEFAULT_CONFIG.server.ipAddress,
       },
       database: {
+        type: (process.env.DATABASE_TYPE as 'memory' | 'mongodb') || fileConfig.database?.type || DEFAULT_CONFIG.database.type,
         uri: process.env.MONGODB_URI || fileConfig.database?.uri || DEFAULT_CONFIG.database.uri,
         name: process.env.MONGODB_DB_NAME || fileConfig.database?.name || DEFAULT_CONFIG.database.name,
       },

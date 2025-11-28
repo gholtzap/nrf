@@ -1,6 +1,5 @@
-import { Collection } from 'mongodb';
 import { HeartbeatMetadata } from '../types/heartbeatMetadata';
-import { mongoClient } from '../db/mongodb';
+import { storageAdapter, StorageCollection } from '../db/storageAdapter';
 import { nfStore } from '../storage/nfStore';
 import { notificationService } from './notificationService';
 
@@ -11,7 +10,7 @@ type HeartbeatConfig = {
 };
 
 class HeartbeatService {
-  private collection: Collection<HeartbeatMetadata> | null = null;
+  private collection: StorageCollection<HeartbeatMetadata> | null = null;
   private intervalId: NodeJS.Timeout | null = null;
   private config: HeartbeatConfig = {
     checkInterval: 10000,
@@ -20,7 +19,7 @@ class HeartbeatService {
   };
 
   initialize(config?: Partial<HeartbeatConfig>): void {
-    this.collection = mongoClient.getCollection<HeartbeatMetadata>('heartbeats');
+    this.collection = storageAdapter.getCollection<HeartbeatMetadata>('heartbeats', 'nfInstanceId');
 
     if (config) {
       this.config = { ...this.config, ...config };
@@ -75,9 +74,10 @@ class HeartbeatService {
       const now = new Date();
       const gracePeriodDate = new Date(now.getTime() + this.config.gracePeriod);
 
-      const expiredHeartbeats = await this.collection.find({
-        expiresAt: { $lt: gracePeriodDate }
-      }).toArray();
+      const cursor = await this.collection.find({
+        expiresAt: { $lt: gracePeriodDate } as any
+      });
+      const expiredHeartbeats = await cursor.toArray();
 
       for (const heartbeat of expiredHeartbeats) {
         console.log(`Heartbeat expired for NF Instance ${heartbeat.nfInstanceId}. Auto-deregistering...`);

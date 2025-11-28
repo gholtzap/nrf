@@ -4,6 +4,7 @@ server:
   ipAddress: 127.0.0.1
 
 database:
+  type: memory
   uri: mongodb+srv://user:password@cluster.mongodb.net/
   name: nrf
 
