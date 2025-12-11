@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { tokenStore } from '../storage/tokenStore';
+import { configService } from '../services/configService';
 
 export type AuthenticatedRequest = Request & {
   nfInstanceId?: string;
@@ -7,6 +8,13 @@ export type AuthenticatedRequest = Request & {
 };
 
 export async function validateToken(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  const config = configService.get();
+
+  if (!config.security.oauth.enabled) {
+    next();
+    return;
+  }
+
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
