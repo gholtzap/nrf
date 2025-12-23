@@ -34,6 +34,12 @@ router.options('/', (_req: Request, res: Response) => {
   }
 });
 
+router.options('/:nfInstanceID/heartbeat', (_req: Request, res: Response) => {
+  res.set('Accept-Encoding', 'gzip, deflate');
+  res.set('Allow', 'PUT, OPTIONS');
+  res.status(204).send();
+});
+
 router.post('/', validateContentType(['application/json']), validate({ body: NFProfileCreateSchema }), validateToken, async (req: Request, res: Response) => {
   const profile = req.body;
 
@@ -232,6 +238,28 @@ router.patch('/:nfInstanceID', validateContentType(['application/json-patch+json
       instance: req.originalUrl
     });
   }
+});
+
+router.put('/:nfInstanceID/heartbeat', validate({ params: PathParamSchema }), async (req: Request, res: Response) => {
+  const { nfInstanceID } = req.params;
+
+  const profile = await nfStore.get(nfInstanceID);
+
+  if (!profile) {
+    return res.status(404).json({
+      type: 'application/problem+json',
+      title: 'Not Found',
+      status: 404,
+      detail: `NF Instance with ID ${nfInstanceID} not found`,
+      instance: req.originalUrl
+    });
+  }
+
+  const heartBeatTimer = req.body?.heartBeatTimer || profile.heartBeatTimer;
+
+  await heartbeatService.recordHeartbeat(nfInstanceID, heartBeatTimer);
+
+  res.status(204).send();
 });
 
 router.delete('/:nfInstanceID', validate({ params: PathParamSchema }), validateToken, async (req: Request, res: Response) => {

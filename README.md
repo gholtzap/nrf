@@ -15,6 +15,7 @@ This project implements the NRF component based on 3GPP specifications.
 - NFManagement Service - NF Registration (PUT /nnrf-nfm/v1/nf-instances/{nfInstanceID})
 - NFManagement Service - NF Update (PATCH /nnrf-nfm/v1/nf-instances/{nfInstanceID})
 - NFManagement Service - NF Deregistration (DELETE /nnrf-nfm/v1/nf-instances/{nfInstanceID})
+- NFManagement Service - NF Heartbeat (PUT /nnrf-nfm/v1/nf-instances/{nfInstanceID}/heartbeat)
 - NFManagement Service - OPTIONS (OPTIONS /nnrf-nfm/v1/nf-instances)
 - NFManagement Service - Get Shared Data (GET /nnrf-nfm/v1/shared-data/{sharedDataId})
 - NFManagement Service - Register Shared Data (PUT /nnrf-nfm/v1/shared-data/{sharedDataId})
