@@ -1,10 +1,10 @@
-# NRF (Network Repository Function)
+# NRF
 
-5G Core Network Repository Function implementation.
+**This repo is not production-ready yet. I am still developing the core features.**
 
-## Overview
+The NRF (Network Repository Function) is a core component of the 5G architecture. It is responsible for maintaining NF profiles, enabling NF discovery and selection, and managing NF status information.
 
-This project implements the NRF component based on 3GPP specifications.
+`nrf-typescript` is a TypeScript implementation of 3GPP's 5G NRF specification. The specification can be found [here](https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=3416).
 
 ## Features
 
